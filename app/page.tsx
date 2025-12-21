@@ -154,17 +154,20 @@ export default function Home() {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
             {[
-              {
+              { 
+                slug:"leadership-strategique-et-gouvernance",
                 title: locale === "fr" ? "Leadership Stratégique" : "Strategic Leadership",
                 category: "Management",
                 duration: "4 semaines",
               },
               {
+                slug:"gouvernance-publique-administration",
                 title: locale === "fr" ? "Gouvernance Publique" : "Public Governance",
                 category: locale === "fr" ? "Gouvernance" : "Governance",
                 duration: "6 semaines",
               },
               {
+                slug: "ethique-professionnelle-deontologie",
                 title: locale === "fr" ? "Éthique et Conformité" : "Ethics & Compliance",
                 category: locale === "fr" ? "Éthique" : "Ethics",
                 duration: "5 semaines",
@@ -185,19 +188,21 @@ export default function Home() {
                     <Award className="h-4 w-4 text-[#C9A44A]" />
                     <span>{cert.duration}</span>
                   </div>
-                  <Button className="w-full bg-[#153D63] hover:bg-[#0A2A43] text-white">{t.cta.learnMore}</Button>
+                  <Link href={`/certifications/${cert.slug}`}>
+                  <Button className="w-full bg-[#153D63] hover:bg-[#0A2A43] text-white">{t.cta.learnMore}</Button></Link>
                 </CardContent>
               </Card>
             ))}
           </div>
           <div className="text-center">
+            <Link href="/certifications" className="btn btn-outline-light btn-lg">
             <Button
               size="lg"
               variant="outline"
               className="border-[#C9A44A] text-[#0A2A43] hover:bg-[#C9A44A] hover:text-white bg-transparent"
             >
               {t.cta.viewAll}
-            </Button>
+            </Button></Link>
           </div>
         </div>
       </section>
@@ -220,9 +225,10 @@ export default function Home() {
                 ? "Únase a miles de profesionales que han elegido ETHSUN para su desarrollo."
                 : "Join thousands of professionals who have chosen ETHSUN for their development."}
           </p>
+          <Link href="/contact" className="btn btn-outline-light btn-lg">
           <Button size="lg" className="bg-[#C9A44A] hover:bg-[#b08f3a] text-[#0A2A43] font-semibold text-lg px-8">
             {t.cta.contact}
-          </Button>
+          </Button></Link>
         </div>
       </section>
 
