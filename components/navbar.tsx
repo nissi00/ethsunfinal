@@ -1,0 +1,134 @@
+"use client"
+
+import { useState } from "react"
+import Image from "next/image"
+import Link from "next/link"
+import { Menu, X, Mail, Phone } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { LanguageSwitcher } from "@/components/language-switcher"
+import { type Locale, getTranslation } from "@/lib/i18n"
+
+export function Navbar() {
+  const [isOpen, setIsOpen] = useState(false)
+  const [locale, setLocale] = useState<Locale>("fr")
+  const t = getTranslation(locale)
+
+  const navItems = [
+    { href: "/", label: t.nav.home },
+    { href: "/certifications", label: t.nav.certifications },
+    { href: "/events", label: t.nav.events },
+    { href: "/corporate-academies", label: t.nav.corporateAcademies },
+    { href: "/franchise", label: t.nav.franchise },
+    { href: "/resources", label: t.nav.resources },
+    { href: "/about", label: t.nav.about },
+    { href: "/contact", label: t.nav.contact },
+    { href: "/inscription", label: "Inscription" },
+  ]
+
+  return (
+    <>
+      {/* Top bar */}
+      <div className="bg-[#0A2A43] text-white py-2">
+        <div className="container mx-auto px-4 flex justify-between items-center text-sm">
+          <div className="flex gap-6">
+            <a href="mailto:info@ethsun-oxford.uk" className="flex items-center gap-2 hover:text-[#C9A44A] transition">
+              <Mail className="h-4 w-4" />
+              <span className="hidden md:inline">info@ethsun-oxford.uk</span>
+            </a>
+            <a href="tel:+447424201585" className="flex items-center gap-2 hover:text-[#C9A44A] transition">
+              <Phone className="h-4 w-4" />
+              <span className="hidden md:inline">+44 74 2420 1585</span>
+            </a>
+          </div>
+          <LanguageSwitcher currentLocale={locale} onLocaleChange={setLocale} />
+        </div>
+      </div>
+
+      {/* Main navbar */}
+      <nav className="bg-[#153D63] shadow-lg sticky top-0 z-50">
+        <div className="container mx-auto px-4">
+          <div className="flex justify-between items-center py-4">
+            
+            {/* Logo + Brand */}
+            <Link href="/" className="flex items-center gap-3">
+              <Image
+                src="/ethsun logo.png"
+                alt="ETHSUN Logo"
+                width={60}
+                height={60}
+                className="object-contain"
+                priority
+              />
+
+              <div className="flex flex-col leading-tight">
+                <span className="text-xl font-serif font-bold text-white">
+                  ETHSUN
+                </span>
+                <span className="text-xs text-[#C9A44A] tracking-wide">
+                  Executive Education · Oxford
+                </span>
+              </div>
+            </Link>
+
+            {/* Desktop Navigation */}
+            <div className="hidden lg:flex items-center gap-1 text-xs">
+                {navItems.map((item) => (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      className={`px-3 py-2 text-xs font-medium transition
+                        ${
+                          item.href === "/inscription"
+                            ? "text-[#0A2A43] bg-[#C9A44A] rounded-md hover:bg-[#b08f3a]"
+                            : "text-white hover:text-[#C9A44A]"
+                        }`}
+                    >
+                      {item.label}
+                    </Link>
+                  ))}
+
+
+              <Button className="ml-4 bg-[#C9A44A] hover:bg-[#b08f3a] text-[#0A2A43] font-semibold">
+                {t.nav.learnerSpace}
+              </Button>
+            </div>
+
+            {/* Mobile menu button */}
+            <button
+              className="lg:hidden text-white"
+              onClick={() => setIsOpen(!isOpen)}
+              aria-label="Toggle menu"
+            >
+              {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+            </button>
+          </div>
+
+          {/* Mobile Navigation */}
+          {isOpen && (
+            <div className="lg:hidden pb-4 border-t border-white/10">
+              {navItems.map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={`block py-3 text-xs font-medium transition
+                    ${
+                      item.href === "/inscription"
+                        ? "bg-[#C9A44A] text-[#0A2A43] rounded-md px-3 mt-2"
+                        : "text-white hover:text-[#C9A44A]"
+                    }`}
+                  onClick={() => setIsOpen(false)}
+                >
+                  {item.label}
+                </Link>
+              ))}
+
+              <Button className="w-full mt-4 bg-[#C9A44A] hover:bg-[#b08f3a] text-[#0A2A43] font-semibold">
+                {t.nav.learnerSpace}
+              </Button>
+            </div>
+          )}
+        </div>
+      </nav>
+    </>
+  )
+}
