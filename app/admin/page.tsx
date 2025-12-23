@@ -167,16 +167,16 @@ export default async function AdminDashboard() {
                     </Link>
 
                     <Link
-                        href="/admin/content/testimonials"
+                        href="/admin/content/certifications"
                         className="p-4 bg-white rounded-lg border hover:shadow-md transition-shadow"
                     >
                         <div className="flex items-center gap-3">
                             <div className="w-10 h-10 bg-[#0A2A43]/10 rounded-lg flex items-center justify-center">
-                                <MessageSquare className="h-5 w-5 text-[#0A2A43]" />
+                                <GraduationCap className="h-5 w-5 text-[#0A2A43]" />
                             </div>
                             <div>
-                                <div className="font-medium text-[#0A2A43]">Témoignages</div>
-                                <div className="text-xs text-[#4A4A4A]">Avis clients</div>
+                                <div className="font-medium text-[#0A2A43]">Certifications</div>
+                                <div className="text-xs text-[#4A4A4A]">Formations</div>
                             </div>
                         </div>
                     </Link>

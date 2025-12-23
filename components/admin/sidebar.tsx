@@ -41,7 +41,7 @@ const navigation = [
         icon: BarChart3,
         children: [
             { name: "Statistiques", href: "/admin/content/stats" },
-            { name: "Témoignages", href: "/admin/content/testimonials" },
+            { name: "Certifications", href: "/admin/content/certifications" },
         ],
     },
     {
