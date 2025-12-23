@@ -209,7 +209,8 @@ const certificationDomains = [
         level: "Avancé",
         price: "€1,400",
       },
-      {slug: "intelligence-artificielle-appliquee",
+      {
+        slug: "intelligence-artificielle-appliquee",
 
         title: {
           fr: "leadership-strategique-gouvernance",
@@ -220,7 +221,8 @@ const certificationDomains = [
         level: "Avancé",
         price: "€1,500",
       },
-      {slug: "cybersecurite-resilience",
+      {
+        slug: "cybersecurite-resilience",
 
         title: {
           fr: "Cybersécurité et Résilience",
@@ -295,7 +297,8 @@ const certificationDomains = [
         level: "Intermédiaire",
         price: "€1,100",
       },
-      {slug: "qualite-service-hotelier",
+      {
+        slug: "qualite-service-hotelier",
 
         title: {
           fr: "Qualité de Service Hôtelier",
@@ -376,7 +379,7 @@ export default function CertificationsPage() {
       <Navbar />
 
       {/* Hero */}
-      <section className="bg-gradient-to-br from-[#0A2A43] to-[#153D63] text-white py-20">
+      <section className="bg-gradient-theme text-white py-20">
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto text-center">
             <h1 className="text-4xl lg:text-5xl font-serif font-bold mb-6">
@@ -398,7 +401,7 @@ export default function CertificationsPage() {
       </section>
 
       {/* Benefits */}
-      <section className="py-16 bg-[#F5F6F7]">
+      <section className="py-16 bg-theme-bg">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {[
@@ -475,9 +478,9 @@ export default function CertificationsPage() {
             ].map((benefit, index) => (
               <Card key={index} className="border-none bg-white">
                 <CardContent className="p-6 text-center">
-                  <benefit.icon className="h-12 w-12 text-[#C9A44A] mx-auto mb-4" />
-                  <h3 className="font-serif font-semibold text-[#0A2A43] mb-2">{benefit.title}</h3>
-                  <p className="text-sm text-[#4A4A4A]">{benefit.desc}</p>
+                  <benefit.icon className="h-12 w-12 text-theme-accent mx-auto mb-4" />
+                  <h3 className="font-serif font-semibold text-theme-primary mb-2">{benefit.title}</h3>
+                  <p className="text-sm text-theme-text">{benefit.desc}</p>
                 </CardContent>
               </Card>
             ))}
@@ -485,7 +488,7 @@ export default function CertificationsPage() {
         </div>
       </section>
       {/* Certifications Grid */}
-{/* <section className="py-16 bg-[#F5F6F7]">
+      {/* <section className="py-16 bg-[#F5F6F7]">
   <div className="container mx-auto px-4">
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
       {certifications.map((cert: Cert) => (
@@ -568,11 +571,11 @@ export default function CertificationsPage() {
                           </div>
                           <span className="font-semibold text-[#C9A44A]">{cert.price}</span>
                         </div>
-                          <Link href={`/certifications/${cert.slug}`}>
-  <Button className="w-full bg-[#153D63] hover:bg-[#0A2A43]">
-    {locale === "fr" ? "En savoir plus" : locale === "es" ? "Saber más" : "Learn more"}
-  </Button>
-</Link>
+                        <Link href={`/certifications/${cert.slug}`}>
+                          <Button className="w-full bg-[#153D63] hover:bg-[#0A2A43]">
+                            {locale === "fr" ? "En savoir plus" : locale === "es" ? "Saber más" : "Learn more"}
+                          </Button>
+                        </Link>
 
                       </CardContent>
                     </Card>
@@ -590,7 +593,7 @@ export default function CertificationsPage() {
                   ? "Descargar Catálogo Completo"
                   : "Download Full Catalog"}
             </Button>
-            
+
           </div>
         </div>
       </section>

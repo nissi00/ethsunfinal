@@ -19,8 +19,10 @@ import {
   DollarSign,
   Target,
   Handshake,
+  Loader2,
 } from "lucide-react"
 import type { Locale } from "@/lib/i18n"
+import { toast } from "sonner"
 
 const offerings = [
   {
@@ -206,13 +208,77 @@ const steps = [
 
 export default function FranchisePage() {
   const [locale] = useState<Locale>("fr")
+  const [loading, setLoading] = useState(false)
+  const [success, setSuccess] = useState(false)
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    phone: "",
+    country: "",
+    city: "",
+    organization: "",
+    motivation: "",
+    project: "",
+  })
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault()
+    setLoading(true)
+
+    try {
+      const res = await fetch("/api/forms/franchise", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      })
+
+      if (res.ok) {
+        setSuccess(true)
+        setFormData({
+          firstName: "",
+          lastName: "",
+          email: "",
+          phone: "",
+          country: "",
+          city: "",
+          organization: "",
+          motivation: "",
+          project: "",
+        })
+        toast.success(
+          locale === "fr"
+            ? "Candidature envoyée avec succès !"
+            : locale === "es"
+              ? "¡Candidatura enviada con éxito!"
+              : "Application submitted successfully!"
+        )
+      } else {
+        throw new Error()
+      }
+    } catch (error) {
+      toast.error(
+        locale === "fr"
+          ? "Erreur lors de l'envoi. Veuillez réessayer."
+          : locale === "es"
+            ? "Error al enviar. Por favor, inténtelo de nuevo."
+            : "Error sending application. Please try again."
+      )
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  function handleChange(field: string, value: string) {
+    setFormData({ ...formData, [field]: value })
+  }
 
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
 
       {/* Hero */}
-      <section className="bg-gradient-to-br from-[#0A2A43] to-[#153D63] text-white py-20">
+      <section className="bg-gradient-theme text-white py-20">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto text-center">
             <h1 className="text-4xl lg:text-5xl font-serif font-bold mb-6">
@@ -229,7 +295,7 @@ export default function FranchisePage() {
                   ? "La red de franquicias ETHSUN permite a emprendedores, instituciones u organizaciones abrir un centro de formación certificado bajo la marca ETHSUN. El franquiciador proporciona programas, certificación, LMS, marca, auditoría de calidad y soporte pedagógico."
                   : "The ETHSUN franchise network allows entrepreneurs, institutions or organizations to open a certified training center under the ETHSUN brand. The franchisor provides programs, certification, LMS, branding, quality audit and pedagogical support."}
             </p>
-            <Button size="lg" className="bg-[#C9A44A] hover:bg-[#b08f3a] text-[#0A2A43] font-semibold">
+            <Button size="lg" className="bg-theme-accent hover:opacity-90 text-theme-primary font-semibold">
               {locale === "fr" ? "Rejoindre le Réseau" : locale === "es" ? "Unirse a la Red" : "Join the Network"}
             </Button>
           </div>
@@ -240,7 +306,7 @@ export default function FranchisePage() {
       <section className="py-20">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="text-3xl lg:text-4xl font-serif font-bold text-[#0A2A43] mb-4">
+            <h2 className="text-3xl lg:text-4xl font-serif font-bold text-theme-primary mb-4">
               {locale === "fr"
                 ? "Ce que Nous Offrons aux Franchisés"
                 : locale === "es"
@@ -383,86 +449,175 @@ export default function FranchisePage() {
             </div>
             <Card className="border-none shadow-xl">
               <CardContent className="p-8">
-                <form className="space-y-6">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {success ? (
+                  <div className="text-center py-12">
+                    <CheckCircle className="h-16 w-16 text-green-500 mx-auto mb-4" />
+                    <h3 className="text-2xl font-serif font-bold text-[#0A2A43] mb-2">
+                      {locale === "fr"
+                        ? "Candidature envoyée !"
+                        : locale === "es"
+                          ? "¡Candidatura enviada!"
+                          : "Application submitted!"}
+                    </h3>
+                    <p className="text-[#4A4A4A] mb-6">
+                      {locale === "fr"
+                        ? "Notre équipe vous contactera sous 48h."
+                        : locale === "es"
+                          ? "Nuestro equipo le contactará en 48h."
+                          : "Our team will contact you within 48 hours."}
+                    </p>
+                    <Button
+                      onClick={() => setSuccess(false)}
+                      variant="outline"
+                    >
+                      {locale === "fr"
+                        ? "Nouvelle candidature"
+                        : locale === "es"
+                          ? "Nueva candidatura"
+                          : "New application"}
+                    </Button>
+                  </div>
+                ) : (
+                  <form onSubmit={handleSubmit} className="space-y-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="space-y-2">
+                        <Label htmlFor="firstName">
+                          {locale === "fr" ? "Prénom *" : locale === "es" ? "Nombre *" : "First Name *"}
+                        </Label>
+                        <Input
+                          id="firstName"
+                          required
+                          value={formData.firstName}
+                          onChange={(e) => handleChange("firstName", e.target.value)}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="lastName">
+                          {locale === "fr" ? "Nom *" : locale === "es" ? "Apellido *" : "Last Name *"}
+                        </Label>
+                        <Input
+                          id="lastName"
+                          required
+                          value={formData.lastName}
+                          onChange={(e) => handleChange("lastName", e.target.value)}
+                        />
+                      </div>
+                    </div>
                     <div className="space-y-2">
-                      <Label htmlFor="firstName">
-                        {locale === "fr" ? "Prénom" : locale === "es" ? "Nombre" : "First Name"}
+                      <Label htmlFor="email">Email *</Label>
+                      <Input
+                        id="email"
+                        type="email"
+                        required
+                        value={formData.email}
+                        onChange={(e) => handleChange("email", e.target.value)}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="phone">
+                        {locale === "fr" ? "Téléphone" : locale === "es" ? "Teléfono" : "Phone"}
                       </Label>
-                      <Input id="firstName" placeholder="" />
+                      <Input
+                        id="phone"
+                        value={formData.phone}
+                        onChange={(e) => handleChange("phone", e.target.value)}
+                      />
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="space-y-2">
+                        <Label htmlFor="country">
+                          {locale === "fr" ? "Pays *" : locale === "es" ? "País *" : "Country *"}
+                        </Label>
+                        <Input
+                          id="country"
+                          required
+                          value={formData.country}
+                          onChange={(e) => handleChange("country", e.target.value)}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="city">
+                          {locale === "fr" ? "Ville *" : locale === "es" ? "Ciudad *" : "City *"}
+                        </Label>
+                        <Input
+                          id="city"
+                          required
+                          value={formData.city}
+                          onChange={(e) => handleChange("city", e.target.value)}
+                        />
+                      </div>
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="lastName">
-                        {locale === "fr" ? "Nom" : locale === "es" ? "Apellido" : "Last Name"}
+                      <Label htmlFor="organization">
+                        {locale === "fr"
+                          ? "Organisation (optionnel)"
+                          : locale === "es"
+                            ? "Organización (opcional)"
+                            : "Organization (optional)"}
                       </Label>
-                      <Input id="lastName" placeholder="" />
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="email">Email</Label>
-                    <Input id="email" type="email" placeholder="" />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="phone">
-                      {locale === "fr" ? "Téléphone" : locale === "es" ? "Teléfono" : "Phone"}
-                    </Label>
-                    <Input id="phone" placeholder="" />
-                  </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="space-y-2">
-                      <Label htmlFor="country">{locale === "fr" ? "Pays" : locale === "es" ? "País" : "Country"}</Label>
-                      <Input id="country" placeholder="" />
+                      <Input
+                        id="organization"
+                        value={formData.organization}
+                        onChange={(e) => handleChange("organization", e.target.value)}
+                      />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="city">{locale === "fr" ? "Ville" : locale === "es" ? "Ciudad" : "City"}</Label>
-                      <Input id="city" placeholder="" />
+                      <Label htmlFor="motivation">
+                        {locale === "fr"
+                          ? "Motivation pour devenir franchisé"
+                          : locale === "es"
+                            ? "Motivación para convertirse en franquiciado"
+                            : "Motivation to become a franchisee"}
+                      </Label>
+                      <Textarea
+                        id="motivation"
+                        rows={4}
+                        value={formData.motivation}
+                        onChange={(e) => handleChange("motivation", e.target.value)}
+                      />
                     </div>
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="organization">
+                    <div className="space-y-2">
+                      <Label htmlFor="project">
+                        {locale === "fr"
+                          ? "Présentation du projet"
+                          : locale === "es"
+                            ? "Presentación del proyecto"
+                            : "Project presentation"}
+                      </Label>
+                      <Textarea
+                        id="project"
+                        rows={4}
+                        value={formData.project}
+                        onChange={(e) => handleChange("project", e.target.value)}
+                      />
+                    </div>
+                    <Button
+                      type="submit"
+                      disabled={loading}
+                      className="w-full bg-[#C9A44A] hover:bg-[#b08f3a] text-[#0A2A43] font-semibold text-lg py-6"
+                    >
+                      {loading ? (
+                        <>
+                          <Loader2 className="h-5 w-5 mr-2 animate-spin" />
+                          {locale === "fr" ? "Envoi en cours..." : locale === "es" ? "Enviando..." : "Submitting..."}
+                        </>
+                      ) : (
+                        locale === "fr"
+                          ? "Soumettre ma Candidature"
+                          : locale === "es"
+                            ? "Enviar mi Candidatura"
+                            : "Submit my Application"
+                      )}
+                    </Button>
+                    <p className="text-xs text-center text-[#4A4A4A]">
                       {locale === "fr"
-                        ? "Organisation (optionnel)"
+                        ? "Le modèle financier détaillé et les conditions contractuelles seront partagés uniquement avec les candidats présélectionnés."
                         : locale === "es"
-                          ? "Organización (opcional)"
-                          : "Organization (optional)"}
-                    </Label>
-                    <Input id="organization" placeholder="" />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="motivation">
-                      {locale === "fr"
-                        ? "Motivation pour devenir franchisé"
-                        : locale === "es"
-                          ? "Motivación para convertirse en franquiciado"
-                          : "Motivation to become a franchisee"}
-                    </Label>
-                    <Textarea id="motivation" rows={4} placeholder="" />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="project">
-                      {locale === "fr"
-                        ? "Présentation du projet"
-                        : locale === "es"
-                          ? "Presentación del proyecto"
-                          : "Project presentation"}
-                    </Label>
-                    <Textarea id="project" rows={4} placeholder="" />
-                  </div>
-                  <Button className="w-full bg-[#C9A44A] hover:bg-[#b08f3a] text-[#0A2A43] font-semibold text-lg py-6">
-                    {locale === "fr"
-                      ? "Soumettre ma Candidature"
-                      : locale === "es"
-                        ? "Enviar mi Candidatura"
-                        : "Submit my Application"}
-                  </Button>
-                  <p className="text-xs text-center text-[#4A4A4A]">
-                    {locale === "fr"
-                      ? "Le modèle financier détaillé et les conditions contractuelles seront partagés uniquement avec les candidats présélectionnés."
-                      : locale === "es"
-                        ? "El modelo financiero detallado y las condiciones contractuales se compartirán únicamente con los candidatos preseleccionados."
-                        : "The detailed financial model and contractual conditions will be shared only with pre-selected candidates."}
-                  </p>
-                </form>
+                          ? "El modelo financiero detallado y las condiciones contractuales se compartirán únicamente con los candidatos preseleccionados."
+                          : "The detailed financial model and contractual conditions will be shared only with pre-selected candidates."}
+                    </p>
+                  </form>
+                )}
               </CardContent>
             </Card>
           </div>

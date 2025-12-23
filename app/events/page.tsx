@@ -120,10 +120,10 @@ export default function EventsPage() {
       <Navbar />
 
       {/* Hero */}
-      <section className="bg-gradient-to-br from-[#0A2A43] to-[#153D63] text-white py-20">
+      <section className="bg-gradient-theme text-white py-20">
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto text-center">
-            <Calendar className="h-16 w-16 text-[#C9A44A] mx-auto mb-6" />
+            <Calendar className="h-16 w-16 text-theme-accent mx-auto mb-6" />
             <h1 className="text-4xl lg:text-5xl font-serif font-bold mb-6">
               {locale === "fr"
                 ? "Événements Professionnels ETHSUN"
@@ -146,17 +146,17 @@ export default function EventsPage() {
       <section className="py-20">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="text-3xl lg:text-4xl font-serif font-bold text-[#0A2A43] mb-4">
+            <h2 className="text-3xl lg:text-4xl font-serif font-bold text-theme-primary mb-4">
               {locale === "fr" ? "Types d'Événements" : locale === "es" ? "Tipos de Eventos" : "Event Types"}
             </h2>
-            <div className="w-24 h-1 bg-[#C9A44A] mx-auto" />
+            <div className="w-24 h-1 bg-theme-accent mx-auto" />
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {eventTypes.map((type, index) => (
               <Card key={index} className="hover:shadow-xl transition-shadow border-none">
                 <CardContent className="p-8">
-                  <type.icon className="h-12 w-12 text-[#C9A44A] mb-4" />
-                  <h3 className="text-xl font-serif font-semibold text-[#0A2A43] mb-3">
+                  <type.icon className="h-12 w-12 text-theme-accent mb-4" />
+                  <h3 className="text-xl font-serif font-semibold text-theme-primary mb-3">
                     {locale === "fr" ? type.titleFr : locale === "es" ? type.titleEs : type.titleEn}
                   </h3>
                   <p className="text-[#4A4A4A] leading-relaxed">
@@ -206,9 +206,9 @@ export default function EventsPage() {
                     </div>
                   </div>
                   <Link href="/inscription">
-                  <Button className="w-full bg-[#153D63] hover:bg-[#0A2A43]">
-                    {locale === "fr" ? "S'Inscrire" : locale === "es" ? "Registrarse" : "Register"}
-                  </Button>
+                    <Button className="w-full bg-[#153D63] hover:bg-[#0A2A43]">
+                      {locale === "fr" ? "S'Inscrire" : locale === "es" ? "Registrarse" : "Register"}
+                    </Button>
                   </Link>
                 </CardContent>
               </Card>

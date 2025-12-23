@@ -133,10 +133,10 @@ export default function ResourcesPage() {
       <Navbar />
 
       {/* Hero */}
-      <section className="bg-gradient-to-br from-[#0A2A43] to-[#153D63] text-white py-20">
+      <section className="bg-gradient-theme text-white py-20">
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto text-center">
-            <BookOpen className="h-16 w-16 text-[#C9A44A] mx-auto mb-6" />
+            <BookOpen className="h-16 w-16 text-theme-accent mx-auto mb-6" />
             <h1 className="text-4xl lg:text-5xl font-serif font-bold mb-6">
               {locale === "fr"
                 ? "Ressources Académiques et Documents"
@@ -159,33 +159,33 @@ export default function ResourcesPage() {
       <section className="py-20">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="text-3xl lg:text-4xl font-serif font-bold text-[#0A2A43] mb-4">
+            <h2 className="text-3xl lg:text-4xl font-serif font-bold text-theme-primary mb-4">
               {locale === "fr"
                 ? "Catalogues de Formation"
                 : locale === "es"
                   ? "Catálogos de Formación"
                   : "Training Catalogs"}
             </h2>
-            <div className="w-24 h-1 bg-[#C9A44A] mx-auto" />
+            <div className="w-24 h-1 bg-theme-accent mx-auto" />
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {catalogues.map((catalogue, index) => (
               <Card key={index} className="hover:shadow-xl transition-shadow border-none">
-                <div className="h-48 bg-gradient-to-br from-[#153D63] to-[#0A2A43] flex items-center justify-center">
-                  <FileText className="h-20 w-20 text-[#C9A44A]" />
+                <div className="h-48 bg-gradient-theme flex items-center justify-center">
+                  <FileText className="h-20 w-20 text-theme-accent" />
                 </div>
                 <CardContent className="p-6">
                   <div className="flex gap-2 mb-3">
-                    <Badge className="bg-[#C9A44A] text-[#0A2A43]">{catalogue.format}</Badge>
+                    <Badge className="bg-theme-accent text-theme-primary">{catalogue.format}</Badge>
                     <Badge variant="outline">{catalogue.pages}</Badge>
                   </div>
-                  <h3 className="text-lg font-serif font-semibold text-[#0A2A43] mb-2 text-balance">
+                  <h3 className="text-lg font-serif font-semibold text-theme-primary mb-2 text-balance">
                     {locale === "fr" ? catalogue.titleFr : locale === "es" ? catalogue.titleEs : catalogue.titleEn}
                   </h3>
-                  <p className="text-sm text-[#4A4A4A] mb-4">
+                  <p className="text-sm text-theme-text mb-4">
                     {locale === "fr" ? catalogue.descFr : locale === "es" ? catalogue.descEs : catalogue.descEn}
                   </p>
-                  <Button className="w-full bg-[#153D63] hover:bg-[#0A2A43]">
+                  <Button className="w-full bg-theme-secondary hover:opacity-90">
                     <Download className="h-4 w-4 mr-2" />
                     {locale === "fr" ? "Télécharger" : locale === "es" ? "Descargar" : "Download"}
                   </Button>
@@ -197,24 +197,24 @@ export default function ResourcesPage() {
       </section>
 
       {/* White Papers */}
-      <section className="py-20 bg-[#F5F6F7]">
+      <section className="py-20 bg-theme-bg">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="text-3xl lg:text-4xl font-serif font-bold text-[#0A2A43] mb-4">
+            <h2 className="text-3xl lg:text-4xl font-serif font-bold text-theme-primary mb-4">
               {locale === "fr" ? "Livres Blancs" : locale === "es" ? "Libros Blancos" : "White Papers"}
             </h2>
-            <div className="w-24 h-1 bg-[#C9A44A] mx-auto" />
+            <div className="w-24 h-1 bg-theme-accent mx-auto" />
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {whitepapers.map((paper, index) => (
               <Card key={index} className="border-none bg-white hover:shadow-xl transition-shadow">
                 <CardContent className="p-6">
-                  <File className="h-12 w-12 text-[#C9A44A] mb-4" />
-                  <Badge className="mb-3 bg-[#153D63] text-white">{paper.category}</Badge>
-                  <h3 className="text-lg font-serif font-semibold text-[#0A2A43] mb-3 text-balance">
+                  <File className="h-12 w-12 text-theme-accent mb-4" />
+                  <Badge className="mb-3 bg-theme-secondary text-white">{paper.category}</Badge>
+                  <h3 className="text-lg font-serif font-semibold text-theme-primary mb-3 text-balance">
                     {locale === "fr" ? paper.titleFr : locale === "es" ? paper.titleEs : paper.titleEn}
                   </h3>
-                  <div className="text-sm text-[#4A4A4A] mb-4">
+                  <div className="text-sm text-theme-text mb-4">
                     <p className="font-semibold">{paper.author}</p>
                     <p>{paper.date}</p>
                   </div>
@@ -236,10 +236,10 @@ export default function ResourcesPage() {
       <section className="py-20">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="text-3xl lg:text-4xl font-serif font-bold text-[#0A2A43] mb-4">
+            <h2 className="text-3xl lg:text-4xl font-serif font-bold text-theme-primary mb-4">
               {locale === "fr" ? "Actualités & Articles" : locale === "es" ? "Noticias y Artículos" : "News & Articles"}
             </h2>
-            <div className="w-24 h-1 bg-[#C9A44A] mx-auto" />
+            <div className="w-24 h-1 bg-theme-accent mx-auto" />
           </div>
           <div className="space-y-6 max-w-4xl mx-auto">
             {articles.map((article, index) => (
@@ -247,18 +247,18 @@ export default function ResourcesPage() {
                 <CardContent className="p-6">
                   <div className="flex items-start gap-4">
                     <div className="flex-shrink-0">
-                      <Newspaper className="h-10 w-10 text-[#C9A44A]" />
+                      <Newspaper className="h-10 w-10 text-theme-accent" />
                     </div>
                     <div className="flex-grow">
                       <div className="flex gap-2 mb-2">
-                        <Badge className="bg-[#C9A44A] text-[#0A2A43]">{article.category}</Badge>
-                        <span className="text-sm text-[#4A4A4A]">{article.date}</span>
-                        <span className="text-sm text-[#4A4A4A]">• {article.readTime}</span>
+                        <Badge className="bg-theme-accent text-theme-primary">{article.category}</Badge>
+                        <span className="text-sm text-theme-text">{article.date}</span>
+                        <span className="text-sm text-theme-text">• {article.readTime}</span>
                       </div>
-                      <h3 className="text-xl font-serif font-semibold text-[#0A2A43] mb-2">
+                      <h3 className="text-xl font-serif font-semibold text-theme-primary mb-2">
                         {locale === "fr" ? article.titleFr : locale === "es" ? article.titleEs : article.titleEn}
                       </h3>
-                      <Button variant="link" className="text-[#C9A44A] p-0 h-auto">
+                      <Button variant="link" className="text-theme-accent p-0 h-auto">
                         {locale === "fr" ? "Lire l'article" : locale === "es" ? "Leer artículo" : "Read article"} →
                       </Button>
                     </div>
@@ -271,29 +271,29 @@ export default function ResourcesPage() {
       </section>
 
       {/* Reports */}
-      <section className="py-20 bg-[#F5F6F7]">
+      <section className="py-20 bg-theme-bg">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="text-3xl lg:text-4xl font-serif font-bold text-[#0A2A43] mb-4">
+            <h2 className="text-3xl lg:text-4xl font-serif font-bold text-theme-primary mb-4">
               {locale === "fr" ? "Rapports et Études" : locale === "es" ? "Informes y Estudios" : "Reports and Studies"}
             </h2>
-            <div className="w-24 h-1 bg-[#C9A44A] mx-auto" />
+            <div className="w-24 h-1 bg-theme-accent mx-auto" />
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
             {reports.map((report, index) => (
               <Card key={index} className="border-none bg-white hover:shadow-xl transition-shadow">
                 <CardContent className="p-6">
                   <div className="flex items-start gap-4">
-                    <FileText className="h-12 w-12 text-[#C9A44A] flex-shrink-0" />
+                    <FileText className="h-12 w-12 text-theme-accent flex-shrink-0" />
                     <div className="flex-grow">
-                      <Badge className="mb-3 bg-[#153D63] text-white">{report.year}</Badge>
-                      <h3 className="text-lg font-serif font-semibold text-[#0A2A43] mb-2">
+                      <Badge className="mb-3 bg-theme-secondary text-white">{report.year}</Badge>
+                      <h3 className="text-lg font-serif font-semibold text-theme-primary mb-2">
                         {locale === "fr" ? report.titleFr : locale === "es" ? report.titleEs : report.titleEn}
                       </h3>
-                      <p className="text-sm text-[#4A4A4A] mb-4">
+                      <p className="text-sm text-theme-text mb-4">
                         {locale === "fr" ? report.descFr : locale === "es" ? report.descEs : report.descEn}
                       </p>
-                      <Button size="sm" className="bg-[#C9A44A] hover:bg-[#b08f3a] text-[#0A2A43]">
+                      <Button size="sm" className="bg-theme-accent hover:opacity-90 text-theme-primary">
                         <Download className="h-4 w-4 mr-2" />
                         {locale === "fr" ? "Télécharger" : locale === "es" ? "Descargar" : "Download"}
                       </Button>
@@ -310,10 +310,10 @@ export default function ResourcesPage() {
       <section className="py-20">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="text-3xl lg:text-4xl font-serif font-bold text-[#0A2A43] mb-4">
+            <h2 className="text-3xl lg:text-4xl font-serif font-bold text-theme-primary mb-4">
               {locale === "fr" ? "Ressources Vidéo" : locale === "es" ? "Recursos de Video" : "Video Resources"}
             </h2>
-            <div className="w-24 h-1 bg-[#C9A44A] mx-auto" />
+            <div className="w-24 h-1 bg-theme-accent mx-auto" />
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {[
@@ -337,14 +337,14 @@ export default function ResourcesPage() {
               },
             ].map((video, index) => (
               <Card key={index} className="hover:shadow-xl transition-shadow border-none">
-                <div className="h-48 bg-gradient-to-br from-[#153D63] to-[#0A2A43] flex items-center justify-center relative">
-                  <Video className="h-16 w-16 text-[#C9A44A]" />
+                <div className="h-48 bg-gradient-theme flex items-center justify-center relative">
+                  <Video className="h-16 w-16 text-theme-accent" />
                   <div className="absolute bottom-4 right-4 bg-black/70 text-white px-2 py-1 rounded text-sm">
                     {video.duration}
                   </div>
                 </div>
                 <CardContent className="p-6">
-                  <h3 className="text-lg font-serif font-semibold text-[#0A2A43] text-balance">
+                  <h3 className="text-lg font-serif font-semibold text-theme-primary text-balance">
                     {locale === "fr" ? video.titleFr : locale === "es" ? video.titleEs : video.titleEn}
                   </h3>
                 </CardContent>

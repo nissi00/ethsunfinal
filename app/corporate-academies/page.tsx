@@ -109,10 +109,10 @@ export default function CorporateAcademiesPage() {
       <Navbar />
 
       {/* Hero */}
-      <section className="bg-gradient-to-br from-[#0A2A43] to-[#153D63] text-white py-20">
+      <section className="bg-gradient-theme text-white py-20">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto text-center">
-            <Building2 className="h-16 w-16 text-[#C9A44A] mx-auto mb-6" />
+            <Building2 className="h-16 w-16 text-theme-accent mx-auto mb-6" />
             <h1 className="text-4xl lg:text-5xl font-serif font-bold mb-6">
               {locale === "fr"
                 ? "Création d'Académies Digitales d'Entreprise"
@@ -128,13 +128,13 @@ export default function CorporateAcademiesPage() {
                   : "ETHSUN offers companies, organizations and institutions a complete service for creating custom digital academies. Each academy is designed according to a five-step methodology ensuring performance and impact."}
             </p>
             <Link href="/contact" className="btn btn-outline-light btn-lg">
-            <Button size="lg" className="bg-[#C9A44A] hover:bg-[#b08f3a] text-[#0A2A43] font-semibold">
-              {locale === "fr"
-                ? "Demander un Diagnostic Gratuit"
-                : locale === "es"
-                  ? "Solicitar Diagnóstico Gratuito"
-                  : "Request Free Assessment"}
-            </Button>
+              <Button size="lg" className="bg-theme-accent hover:opacity-90 text-theme-primary font-semibold">
+                {locale === "fr"
+                  ? "Demander un Diagnostic Gratuit"
+                  : locale === "es"
+                    ? "Solicitar Diagnóstico Gratuito"
+                    : "Request Free Assessment"}
+              </Button>
             </Link>
           </div>
         </div>
@@ -144,15 +144,15 @@ export default function CorporateAcademiesPage() {
       <section className="py-20">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="text-3xl lg:text-4xl font-serif font-bold text-[#0A2A43] mb-4">
+            <h2 className="text-3xl lg:text-4xl font-serif font-bold text-theme-primary mb-4">
               {locale === "fr"
                 ? "Notre Méthodologie en 5 Étapes"
                 : locale === "es"
                   ? "Nuestra Metodología en 5 Etapas"
                   : "Our 5-Step Methodology"}
             </h2>
-            <div className="w-24 h-1 bg-[#C9A44A] mx-auto mb-6" />
-            <p className="text-[#4A4A4A] max-w-2xl mx-auto">
+            <div className="w-24 h-1 bg-theme-accent mx-auto mb-6" />
+            <p className="text-theme-text max-w-2xl mx-auto">
               {locale === "fr"
                 ? "Un processus structuré et éprouvé pour créer votre académie d'entreprise"
                 : locale === "es"
@@ -167,23 +167,23 @@ export default function CorporateAcademiesPage() {
                 <CardContent className="p-8">
                   <div className="flex flex-col md:flex-row items-start gap-6">
                     <div className="flex-shrink-0">
-                      <div className="w-16 h-16 rounded-lg bg-[#C9A44A]/10 flex items-center justify-center">
-                        <step.icon className="h-8 w-8 text-[#C9A44A]" />
+                      <div className="w-16 h-16 rounded-lg bg-[var(--color-accent,#C9A44A)]/10 flex items-center justify-center">
+                        <step.icon className="h-8 w-8 text-theme-accent" />
                       </div>
                     </div>
                     <div className="flex-grow">
                       <div className="flex items-center gap-4 mb-3">
-                        <span className="text-5xl font-serif font-bold text-[#C9A44A]/20">{step.number}</span>
-                        <h3 className="text-2xl font-serif font-semibold text-[#0A2A43]">
+                        <span className="text-5xl font-serif font-bold text-[var(--color-accent,#C9A44A)]/20">{step.number}</span>
+                        <h3 className="text-2xl font-serif font-semibold text-theme-primary">
                           {locale === "fr" ? step.titleFr : locale === "es" ? step.titleEs : step.titleEn}
                         </h3>
                       </div>
-                      <p className="text-[#4A4A4A] leading-relaxed">
+                      <p className="text-theme-text leading-relaxed">
                         {locale === "fr" ? step.descFr : locale === "es" ? step.descEs : step.descEn}
                       </p>
                     </div>
                     {index < steps.length - 1 && (
-                      <ArrowRight className="hidden lg:block h-6 w-6 text-[#C9A44A] flex-shrink-0" />
+                      <ArrowRight className="hidden lg:block h-6 w-6 text-theme-accent flex-shrink-0" />
                     )}
                   </div>
                 </CardContent>
@@ -194,27 +194,27 @@ export default function CorporateAcademiesPage() {
       </section>
 
       {/* Benefits */}
-      <section className="py-20 bg-[#F5F6F7]">
+      <section className="py-20 bg-theme-bg">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="text-3xl lg:text-4xl font-serif font-bold text-[#0A2A43] mb-4">
+            <h2 className="text-3xl lg:text-4xl font-serif font-bold text-theme-primary mb-4">
               {locale === "fr"
                 ? "Avantages d'une Académie Digitale"
                 : locale === "es"
                   ? "Ventajas de una Academia Digital"
                   : "Benefits of a Digital Academy"}
             </h2>
-            <div className="w-24 h-1 bg-[#C9A44A] mx-auto" />
+            <div className="w-24 h-1 bg-theme-accent mx-auto" />
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {benefits.map((benefit, index) => (
               <Card key={index} className="border-none bg-white">
                 <CardContent className="p-6">
-                  <CheckCircle className="h-10 w-10 text-[#C9A44A] mb-4" />
-                  <h3 className="text-lg font-serif font-semibold text-[#0A2A43] mb-2">
+                  <CheckCircle className="h-10 w-10 text-theme-accent mb-4" />
+                  <h3 className="text-lg font-serif font-semibold text-theme-primary mb-2">
                     {locale === "fr" ? benefit.titleFr : locale === "es" ? benefit.titleEs : benefit.titleEn}
                   </h3>
-                  <p className="text-sm text-[#4A4A4A]">{benefit.descFr}</p>
+                  <p className="text-sm text-theme-text">{benefit.descFr}</p>
                 </CardContent>
               </Card>
             ))}
@@ -226,14 +226,14 @@ export default function CorporateAcademiesPage() {
       <section className="py-20">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="text-3xl lg:text-4xl font-serif font-bold text-[#0A2A43] mb-4">
+            <h2 className="text-3xl lg:text-4xl font-serif font-bold text-theme-primary mb-4">
               {locale === "fr"
                 ? "Exemples d'Académies Conçues"
                 : locale === "es"
                   ? "Ejemplos de Academias Diseñadas"
                   : "Examples of Designed Academies"}
             </h2>
-            <div className="w-24 h-1 bg-[#C9A44A] mx-auto" />
+            <div className="w-24 h-1 bg-theme-accent mx-auto" />
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {[
@@ -266,22 +266,22 @@ export default function CorporateAcademiesPage() {
               },
             ].map((example, index) => (
               <Card key={index} className="hover:shadow-xl transition-shadow border-none">
-                <div className="h-48 bg-gradient-to-br from-[#153D63] to-[#0A2A43] flex items-center justify-center">
-                  <Building2 className="h-20 w-20 text-[#C9A44A]" />
+                <div className="h-48 bg-gradient-theme flex items-center justify-center">
+                  <Building2 className="h-20 w-20 text-theme-accent" />
                 </div>
                 <CardContent className="p-6">
-                  <h3 className="text-xl font-serif font-semibold text-[#0A2A43] mb-2">{example.title}</h3>
-                  <p className="text-sm text-[#4A4A4A] mb-4">{example.org}</p>
+                  <h3 className="text-xl font-serif font-semibold text-theme-primary mb-2">{example.title}</h3>
+                  <p className="text-sm text-theme-text mb-4">{example.org}</p>
                   <div className="flex gap-6 text-sm">
                     <div>
-                      <div className="font-semibold text-[#C9A44A]">{example.modules}</div>
-                      <div className="text-[#4A4A4A]">
+                      <div className="font-semibold text-theme-accent">{example.modules}</div>
+                      <div className="text-theme-text">
                         {locale === "fr" ? "Modules" : locale === "es" ? "Módulos" : "Modules"}
                       </div>
                     </div>
                     <div>
-                      <div className="font-semibold text-[#C9A44A]">{example.learners}</div>
-                      <div className="text-[#4A4A4A]">
+                      <div className="font-semibold text-theme-accent">{example.learners}</div>
+                      <div className="text-theme-text">
                         {locale === "fr" ? "Apprenants" : locale === "es" ? "Alumnos" : "Learners"}
                       </div>
                     </div>
@@ -294,7 +294,7 @@ export default function CorporateAcademiesPage() {
       </section>
 
       {/* CTA */}
-      <section className="py-20 bg-gradient-to-r from-[#153D63] to-[#0A2A43] text-white">
+      <section className="py-20 bg-gradient-theme-horizontal text-white">
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-3xl lg:text-4xl font-serif font-bold mb-6">
             {locale === "fr"
@@ -311,9 +311,9 @@ export default function CorporateAcademiesPage() {
                 : "Let's discuss your needs and design together a digital academy tailored to your organization."}
           </p>
           <Link href="/contact" className="btn btn-outline-light btn-lg">
-          <Button size="lg" className="bg-[#C9A44A] hover:bg-[#b08f3a] text-[#0A2A43] font-semibold">
-            {locale === "fr" ? "Demander un Devis" : locale === "es" ? "Solicitar Cotización" : "Request Quote"}
-          </Button>
+            <Button size="lg" className="bg-theme-accent hover:opacity-90 text-theme-primary font-semibold">
+              {locale === "fr" ? "Demander un Devis" : locale === "es" ? "Solicitar Cotización" : "Request Quote"}
+            </Button>
           </Link>
         </div>
       </section>

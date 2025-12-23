@@ -166,10 +166,10 @@ export default function AboutPage() {
       <Navbar />
 
       {/* Hero */}
-      <section className="bg-gradient-to-br from-[#0A2A43] to-[#153D63] text-white py-20">
+      <section className="bg-gradient-theme text-white py-20">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto text-center">
-            <Building2 className="h-16 w-16 text-[#C9A44A] mx-auto mb-6" />
+            <Building2 className="h-16 w-16 text-theme-accent mx-auto mb-6" />
             <h1 className="text-4xl lg:text-5xl font-serif font-bold mb-6">
               {locale === "fr"
                 ? "ETHSUN Executive Education Oxford"
@@ -177,7 +177,7 @@ export default function AboutPage() {
                   ? "ETHSUN Executive Education Oxford"
                   : "ETHSUN Executive Education Oxford"}
             </h1>
-            <p className="text-2xl font-serif text-[#C9A44A] mb-6">
+            <p className="text-2xl font-serif text-theme-accent mb-6">
               {locale === "fr"
                 ? "Institution Internationale d'Éducation Executive"
                 : locale === "es"
@@ -192,11 +192,11 @@ export default function AboutPage() {
       <section className="py-20">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
-            <h2 className="text-3xl lg:text-4xl font-serif font-bold text-[#0A2A43] mb-8 text-center">
+            <h2 className="text-3xl lg:text-4xl font-serif font-bold text-theme-primary mb-8 text-center">
               {locale === "fr" ? "Notre Histoire" : locale === "es" ? "Nuestra Historia" : "Our History"}
             </h2>
-            <div className="w-24 h-1 bg-[#C9A44A] mx-auto mb-12" />
-            <div className="prose prose-lg max-w-none text-[#4A4A4A] leading-relaxed">
+            <div className="w-24 h-1 bg-theme-accent mx-auto mb-12" />
+            <div className="prose prose-lg max-w-none text-theme-text leading-relaxed">
               <p className="mb-6">
                 {locale === "fr"
                   ? "ETHSUN Executive Education Oxford trouve son origine dans une ambition claire : créer une institution capable d'allier la tradition académique d'Oxford à l'innovation pédagogique globale."
@@ -224,16 +224,16 @@ export default function AboutPage() {
       </section>
 
       {/* Mission, Vision, Values */}
-      <section className="py-20 bg-[#F5F6F7]">
+      <section className="py-20 bg-theme-bg">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-16">
             <Card className="border-none bg-white">
               <CardContent className="p-8">
-                <Target className="h-12 w-12 text-[#C9A44A] mb-4" />
-                <h3 className="text-2xl font-serif font-bold text-[#0A2A43] mb-4">
+                <Target className="h-12 w-12 text-theme-accent mb-4" />
+                <h3 className="text-2xl font-serif font-bold text-theme-primary mb-4">
                   {locale === "fr" ? "Mission" : locale === "es" ? "Misión" : "Mission"}
                 </h3>
-                <p className="text-[#4A4A4A] leading-relaxed">
+                <p className="text-theme-text leading-relaxed">
                   {locale === "fr"
                     ? "Offrir des expériences de formation d'une qualité académique exceptionnelle, en combinant rigueur intellectuelle, innovation technologique et pertinence professionnelle, afin de renforcer les compétences stratégiques des dirigeants, cadres et institutions publiques."
                     : locale === "es"
@@ -245,11 +245,11 @@ export default function AboutPage() {
 
             <Card className="border-none bg-white">
               <CardContent className="p-8">
-                <Building2 className="h-12 w-12 text-[#C9A44A] mb-4" />
-                <h3 className="text-2xl font-serif font-bold text-[#0A2A43] mb-4">
+                <Building2 className="h-12 w-12 text-theme-accent mb-4" />
+                <h3 className="text-2xl font-serif font-bold text-theme-primary mb-4">
                   {locale === "fr" ? "Vision" : locale === "es" ? "Visión" : "Vision"}
                 </h3>
-                <p className="text-[#4A4A4A] leading-relaxed">
+                <p className="text-theme-text leading-relaxed">
                   {locale === "fr"
                     ? "Devenir l'un des pôles internationaux majeurs de l'éducation exécutive, en construisant un réseau global d'influence fondé sur la recherche appliquée, l'excellence pédagogique et la digitalisation avancée des savoirs."
                     : locale === "es"
@@ -261,11 +261,11 @@ export default function AboutPage() {
 
             <Card className="border-none bg-white">
               <CardContent className="p-8">
-                <Heart className="h-12 w-12 text-[#C9A44A] mb-4" />
-                <h3 className="text-2xl font-serif font-bold text-[#0A2A43] mb-4">
+                <Heart className="h-12 w-12 text-theme-accent mb-4" />
+                <h3 className="text-2xl font-serif font-bold text-theme-primary mb-4">
                   {locale === "fr" ? "Valeurs" : locale === "es" ? "Valores" : "Values"}
                 </h3>
-                <p className="text-[#4A4A4A] leading-relaxed">
+                <p className="text-theme-text leading-relaxed">
                   {locale === "fr"
                     ? "Excellence académique, intégrité et responsabilité, innovation continue, impact global et ouverture internationale guident chacune de nos actions et décisions institutionnelles."
                     : locale === "es"
@@ -280,11 +280,11 @@ export default function AboutPage() {
             {values.map((value, index) => (
               <Card key={index} className="border-none bg-white hover:shadow-xl transition-shadow">
                 <CardContent className="p-6">
-                  <value.icon className="h-10 w-10 text-[#C9A44A] mb-4" />
-                  <h4 className="text-lg font-serif font-semibold text-[#0A2A43] mb-2">
+                  <value.icon className="h-10 w-10 text-theme-accent mb-4" />
+                  <h4 className="text-lg font-serif font-semibold text-theme-primary mb-2">
                     {locale === "fr" ? value.titleFr : locale === "es" ? value.titleEs : value.titleEn}
                   </h4>
-                  <p className="text-sm text-[#4A4A4A] leading-relaxed">
+                  <p className="text-sm text-theme-text leading-relaxed">
                     {locale === "fr" ? value.descFr : locale === "es" ? value.descEs : value.descEn}
                   </p>
                 </CardContent>
@@ -298,15 +298,15 @@ export default function AboutPage() {
       <section className="py-20">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="text-3xl lg:text-4xl font-serif font-bold text-[#0A2A43] mb-4">
+            <h2 className="text-3xl lg:text-4xl font-serif font-bold text-theme-primary mb-4">
               {locale === "fr"
                 ? "Gouvernance Académique"
                 : locale === "es"
                   ? "Gobernanza Académica"
                   : "Academic Governance"}
             </h2>
-            <div className="w-24 h-1 bg-[#C9A44A] mx-auto mb-6" />
-            <p className="text-[#4A4A4A] max-w-3xl mx-auto leading-relaxed">
+            <div className="w-24 h-1 bg-theme-accent mx-auto mb-6" />
+            <p className="text-theme-text max-w-3xl mx-auto leading-relaxed">
               {locale === "fr"
                 ? "ETHSUN Executive Education Oxford est structurée selon une gouvernance académique inspirée des meilleures pratiques des universités internationales."
                 : locale === "es"
@@ -318,11 +318,11 @@ export default function AboutPage() {
             {governance.map((body, index) => (
               <Card key={index} className="border-none hover:shadow-xl transition-shadow">
                 <CardContent className="p-8">
-                  <CheckCircle className="h-10 w-10 text-[#C9A44A] mb-4" />
-                  <h3 className="text-xl font-serif font-semibold text-[#0A2A43] mb-3">
+                  <CheckCircle className="h-10 w-10 text-theme-accent mb-4" />
+                  <h3 className="text-xl font-serif font-semibold text-theme-primary mb-3">
                     {locale === "fr" ? body.titleFr : locale === "es" ? body.titleEs : body.titleEn}
                   </h3>
-                  <p className="text-sm text-[#4A4A4A] leading-relaxed">
+                  <p className="text-sm text-theme-text leading-relaxed">
                     {locale === "fr" ? body.descFr : locale === "es" ? body.descEs : body.descEn}
                   </p>
                 </CardContent>
@@ -333,28 +333,28 @@ export default function AboutPage() {
       </section>
 
       {/* International Presence */}
-      <section className="py-20 bg-[#F5F6F7]">
+      <section className="py-20 bg-theme-bg">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="text-3xl lg:text-4xl font-serif font-bold text-[#0A2A43] mb-4">
+            <h2 className="text-3xl lg:text-4xl font-serif font-bold text-theme-primary mb-4">
               {locale === "fr"
                 ? "Présence Internationale"
                 : locale === "es"
                   ? "Presencia Internacional"
                   : "International Presence"}
             </h2>
-            <div className="w-24 h-1 bg-[#C9A44A] mx-auto" />
+            <div className="w-24 h-1 bg-theme-accent mx-auto" />
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {locations.map((location, index) => (
               <Card key={index} className="border-none bg-white hover:shadow-xl transition-shadow">
                 <CardContent className="p-6 text-center">
-                  <MapPin className="h-10 w-10 text-[#C9A44A] mx-auto mb-3" />
-                  <h3 className="text-xl font-serif font-bold text-[#0A2A43] mb-1">{location.city}</h3>
-                  <p className="text-sm text-[#4A4A4A] mb-3">
+                  <MapPin className="h-10 w-10 text-theme-accent mx-auto mb-3" />
+                  <h3 className="text-xl font-serif font-bold text-theme-primary mb-1">{location.city}</h3>
+                  <p className="text-sm text-theme-text mb-3">
                     {locale === "fr" ? location.country : locale === "es" ? location.countryEs : location.countryEn}
                   </p>
-                  <Badge className="bg-[#C9A44A] text-[#0A2A43]">
+                  <Badge className="bg-theme-accent text-theme-primary">
                     {locale === "fr" ? location.role : locale === "es" ? location.roleEs : location.roleEn}
                   </Badge>
                 </CardContent>
@@ -368,15 +368,15 @@ export default function AboutPage() {
       <section className="py-20">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="text-3xl lg:text-4xl font-serif font-bold text-[#0A2A43] mb-4">
+            <h2 className="text-3xl lg:text-4xl font-serif font-bold text-theme-primary mb-4">
               {locale === "fr"
                 ? "Normes et Certifications ISO"
                 : locale === "es"
                   ? "Normas y Certificaciones ISO"
                   : "ISO Standards and Certifications"}
             </h2>
-            <div className="w-24 h-1 bg-[#C9A44A] mx-auto mb-6" />
-            <p className="text-[#4A4A4A] max-w-3xl mx-auto leading-relaxed">
+            <div className="w-24 h-1 bg-theme-accent mx-auto mb-6" />
+            <p className="text-theme-text max-w-3xl mx-auto leading-relaxed">
               {locale === "fr"
                 ? "ETHSUN s'aligne sur les normes internationales relatives au management éducatif, à la qualité pédagogique et à l'éthique institutionnelle."
                 : locale === "es"
@@ -388,9 +388,9 @@ export default function AboutPage() {
             {standards.map((standard, index) => (
               <Card key={index} className="border-none hover:shadow-xl transition-shadow">
                 <CardContent className="p-6 text-center">
-                  <Award className="h-10 w-10 text-[#C9A44A] mx-auto mb-3" />
-                  <h3 className="text-2xl font-serif font-bold text-[#0A2A43] mb-2">{standard.name}</h3>
-                  <p className="text-sm text-[#4A4A4A]">
+                  <Award className="h-10 w-10 text-theme-accent mx-auto mb-3" />
+                  <h3 className="text-2xl font-serif font-bold text-theme-primary mb-2">{standard.name}</h3>
+                  <p className="text-sm text-theme-text">
                     {locale === "fr" ? standard.descFr : locale === "es" ? standard.descEs : standard.descEn}
                   </p>
                 </CardContent>
@@ -401,20 +401,20 @@ export default function AboutPage() {
       </section>
 
       {/* Partners */}
-      <section className="py-20 bg-[#F5F6F7]">
+      <section className="py-20 bg-theme-bg">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="text-3xl lg:text-4xl font-serif font-bold text-[#0A2A43] mb-4">
+            <h2 className="text-3xl lg:text-4xl font-serif font-bold text-theme-primary mb-4">
               {locale === "fr" ? "Nos Partenaires" : locale === "es" ? "Nuestros Socios" : "Our Partners"}
             </h2>
-            <div className="w-24 h-1 bg-[#C9A44A] mx-auto" />
+            <div className="w-24 h-1 bg-theme-accent mx-auto" />
           </div>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
             {partners.map((partner, index) => (
               <Card key={index} className="border-none bg-white">
                 <CardContent className="p-6 text-center">
-                  <CheckCircle className="h-8 w-8 text-[#C9A44A] mx-auto mb-2" />
-                  <p className="text-sm font-semibold text-[#0A2A43]">{partner}</p>
+                  <CheckCircle className="h-8 w-8 text-theme-accent mx-auto mb-2" />
+                  <p className="text-sm font-semibold text-theme-primary">{partner}</p>
                 </CardContent>
               </Card>
             ))}

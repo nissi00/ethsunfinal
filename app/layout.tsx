@@ -2,6 +2,8 @@ import type React from "react"
 import type { Metadata } from "next"
 import { Lato, Merriweather } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
+import { Toaster } from "sonner"
+import { SiteSettingsProvider } from "@/components/site-settings-provider"
 import "./globals.css"
 
 const lato = Lato({
@@ -49,9 +51,13 @@ export default function RootLayout({
   return (
     <html lang="fr" className={`${lato.variable} ${merriweather.variable}`}>
       <body className="font-sans antialiased">
-        {children}
+        <SiteSettingsProvider>
+          {children}
+        </SiteSettingsProvider>
+        <Toaster richColors position="top-right" />
         <Analytics />
       </body>
     </html>
   )
 }
+

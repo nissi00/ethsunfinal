@@ -7,11 +7,13 @@ import { Menu, X, Mail, Phone } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { LanguageSwitcher } from "@/components/language-switcher"
 import { type Locale, getTranslation } from "@/lib/i18n"
+import { useSiteSettings } from "@/components/site-settings-provider"
 
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false)
   const [locale, setLocale] = useState<Locale>("fr")
   const t = getTranslation(locale)
+  const settings = useSiteSettings()
 
   const navItems = [
     { href: "/", label: t.nav.home },
@@ -28,16 +30,31 @@ export function Navbar() {
   return (
     <>
       {/* Top bar */}
-      <div className="bg-[#0A2A43] text-white py-2">
+      <div
+        className="text-white py-2"
+        style={{ backgroundColor: "var(--color-primary, #0A2A43)" }}
+      >
         <div className="container mx-auto px-4 flex justify-between items-center text-sm">
           <div className="flex gap-6">
-            <a href="mailto:info@ethsun-oxford.uk" className="flex items-center gap-2 hover:text-[#C9A44A] transition">
+            <a
+              href={`mailto:${settings.contactEmail}`}
+              className="flex items-center gap-2 transition"
+              style={{ color: "inherit" }}
+              onMouseEnter={(e) => e.currentTarget.style.color = "var(--color-accent, #C9A44A)"}
+              onMouseLeave={(e) => e.currentTarget.style.color = "inherit"}
+            >
               <Mail className="h-4 w-4" />
-              <span className="hidden md:inline">info@ethsun-oxford.uk</span>
+              <span className="hidden md:inline">{settings.contactEmail}</span>
             </a>
-            <a href="tel:+447424201585" className="flex items-center gap-2 hover:text-[#C9A44A] transition">
+            <a
+              href={`tel:${settings.contactPhone.replace(/\s/g, '')}`}
+              className="flex items-center gap-2 transition"
+              style={{ color: "inherit" }}
+              onMouseEnter={(e) => e.currentTarget.style.color = "var(--color-accent, #C9A44A)"}
+              onMouseLeave={(e) => e.currentTarget.style.color = "inherit"}
+            >
               <Phone className="h-4 w-4" />
-              <span className="hidden md:inline">+44 74 2420 1585</span>
+              <span className="hidden md:inline">{settings.contactPhone}</span>
             </a>
           </div>
           <LanguageSwitcher currentLocale={locale} onLocaleChange={setLocale} />
@@ -45,10 +62,13 @@ export function Navbar() {
       </div>
 
       {/* Main navbar */}
-      <nav className="bg-[#153D63] shadow-lg sticky top-0 z-50">
+      <nav
+        className="shadow-lg sticky top-0 z-50"
+        style={{ backgroundColor: "var(--color-secondary, #153D63)" }}
+      >
         <div className="container mx-auto px-4">
           <div className="flex justify-between items-center py-4">
-            
+
             {/* Logo + Brand */}
             <Link href="/" className="flex items-center gap-3">
               <Image
@@ -64,7 +84,10 @@ export function Navbar() {
                 <span className="text-xl font-serif font-bold text-white">
                   ETHSUN
                 </span>
-                <span className="text-xs text-[#C9A44A] tracking-wide">
+                <span
+                  className="text-xs tracking-wide"
+                  style={{ color: "var(--color-accent, #C9A44A)" }}
+                >
                   Executive Education · Oxford
                 </span>
               </div>
@@ -72,23 +95,42 @@ export function Navbar() {
 
             {/* Desktop Navigation */}
             <div className="hidden lg:flex items-center gap-1 text-xs">
-                {navItems.map((item) => (
-                    <Link
-                      key={item.href}
-                      href={item.href}
-                      className={`px-3 py-2 text-xs font-medium transition
-                        ${
-                          item.href === "/inscription"
-                            ? "text-[#0A2A43] bg-[#C9A44A] rounded-md hover:bg-[#b08f3a]"
-                            : "text-white hover:text-[#C9A44A]"
-                        }`}
-                    >
-                      {item.label}
-                    </Link>
-                  ))}
+              {navItems.map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className="px-3 py-2 text-xs font-medium transition rounded-md"
+                  style={
+                    item.href === "/inscription"
+                      ? {
+                        backgroundColor: "var(--color-accent, #C9A44A)",
+                        color: "var(--color-primary, #0A2A43)"
+                      }
+                      : { color: "white" }
+                  }
+                  onMouseEnter={(e) => {
+                    if (item.href !== "/inscription") {
+                      e.currentTarget.style.color = "var(--color-accent, #C9A44A)"
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (item.href !== "/inscription") {
+                      e.currentTarget.style.color = "white"
+                    }
+                  }}
+                >
+                  {item.label}
+                </Link>
+              ))}
 
 
-              <Button className="ml-4 bg-[#C9A44A] hover:bg-[#b08f3a] text-[#0A2A43] font-semibold">
+              <Button
+                className="ml-4 font-semibold"
+                style={{
+                  backgroundColor: "var(--color-accent, #C9A44A)",
+                  color: "var(--color-primary, #0A2A43)"
+                }}
+              >
                 {t.nav.learnerSpace}
               </Button>
             </div>
@@ -110,19 +152,31 @@ export function Navbar() {
                 <Link
                   key={item.href}
                   href={item.href}
-                  className={`block py-3 text-xs font-medium transition
-                    ${
-                      item.href === "/inscription"
-                        ? "bg-[#C9A44A] text-[#0A2A43] rounded-md px-3 mt-2"
-                        : "text-white hover:text-[#C9A44A]"
-                    }`}
+                  className="block py-3 text-xs font-medium transition"
+                  style={
+                    item.href === "/inscription"
+                      ? {
+                        backgroundColor: "var(--color-accent, #C9A44A)",
+                        color: "var(--color-primary, #0A2A43)",
+                        borderRadius: "0.375rem",
+                        padding: "0.75rem",
+                        marginTop: "0.5rem"
+                      }
+                      : { color: "white" }
+                  }
                   onClick={() => setIsOpen(false)}
                 >
                   {item.label}
                 </Link>
               ))}
 
-              <Button className="w-full mt-4 bg-[#C9A44A] hover:bg-[#b08f3a] text-[#0A2A43] font-semibold">
+              <Button
+                className="w-full mt-4 font-semibold"
+                style={{
+                  backgroundColor: "var(--color-accent, #C9A44A)",
+                  color: "var(--color-primary, #0A2A43)"
+                }}
+              >
                 {t.nav.learnerSpace}
               </Button>
             </div>

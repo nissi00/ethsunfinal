@@ -4,7 +4,14 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  /* ETHSUN brand colors following charte graphique */
+  /* ETHSUN dynamic theme colors - ces valeurs seront écrasées par JavaScript depuis la BDD */
+  --color-primary: #0a2a43;
+  --color-secondary: #153d63;
+  --color-accent: #c9a44a;
+  --color-text: #4a4a4a;
+  --color-bg: #f5f6f7;
+
+  /* Legacy ETHSUN brand colors */
   --oxford-blue: #0a2a43;
   --oxford-blue-light: #153d63;
   --gold-institutional: #c9a44a;
@@ -126,9 +133,11 @@
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
   }
+
   h1,
   h2,
   h3,
@@ -136,5 +145,65 @@
   h5,
   h6 {
     @apply font-serif;
+  }
+}
+
+/* ETHSUN Theme Utility Classes - Couleurs dynamiques */
+@layer utilities {
+
+  /* Backgrounds */
+  .bg-theme-primary {
+    background-color: var(--color-primary, #0a2a43);
+  }
+
+  .bg-theme-secondary {
+    background-color: var(--color-secondary, #153d63);
+  }
+
+  .bg-theme-accent {
+    background-color: var(--color-accent, #c9a44a);
+  }
+
+  .bg-theme-bg {
+    background-color: var(--color-bg, #f5f6f7);
+  }
+
+  /* Text colors */
+  .text-theme-primary {
+    color: var(--color-primary, #0a2a43);
+  }
+
+  .text-theme-secondary {
+    color: var(--color-secondary, #153d63);
+  }
+
+  .text-theme-accent {
+    color: var(--color-accent, #c9a44a);
+  }
+
+  .text-theme-text {
+    color: var(--color-text, #4a4a4a);
+  }
+
+  /* Border colors */
+  .border-theme-primary {
+    border-color: var(--color-primary, #0a2a43);
+  }
+
+  .border-theme-secondary {
+    border-color: var(--color-secondary, #153d63);
+  }
+
+  .border-theme-accent {
+    border-color: var(--color-accent, #c9a44a);
+  }
+
+  /* Gradients */
+  .bg-gradient-theme {
+    background: linear-gradient(135deg, var(--color-primary, #0a2a43), var(--color-secondary, #153d63));
+  }
+
+  .bg-gradient-theme-horizontal {
+    background: linear-gradient(to right, var(--color-secondary, #153d63), var(--color-primary, #0a2a43));
   }
 }

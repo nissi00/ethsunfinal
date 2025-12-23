@@ -9,8 +9,9 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Mail, Phone, MapPin, Clock, Send, MessageSquare } from "lucide-react"
+import { Mail, Phone, MapPin, Clock, Send, MessageSquare, CheckCircle, Loader2 } from "lucide-react"
 import type { Locale } from "@/lib/i18n"
+import { toast } from "sonner"
 
 const contactInfo = [
   {
@@ -78,16 +79,76 @@ const franchiseLocations = [
 
 export default function ContactPage() {
   const [locale] = useState<Locale>("fr")
+  const [loading, setLoading] = useState(false)
+  const [success, setSuccess] = useState(false)
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    phone: "",
+    organization: "",
+    subject: "",
+    message: "",
+  })
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault()
+    setLoading(true)
+
+    try {
+      const res = await fetch("/api/forms/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      })
+
+      if (res.ok) {
+        setSuccess(true)
+        setFormData({
+          firstName: "",
+          lastName: "",
+          email: "",
+          phone: "",
+          organization: "",
+          subject: "",
+          message: "",
+        })
+        toast.success(
+          locale === "fr"
+            ? "Message envoyé avec succès !"
+            : locale === "es"
+              ? "¡Mensaje enviado con éxito!"
+              : "Message sent successfully!"
+        )
+      } else {
+        throw new Error()
+      }
+    } catch (error) {
+      toast.error(
+        locale === "fr"
+          ? "Erreur lors de l'envoi. Veuillez réessayer."
+          : locale === "es"
+            ? "Error al enviar. Por favor, inténtelo de nuevo."
+            : "Error sending message. Please try again."
+      )
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  function handleChange(field: string, value: string) {
+    setFormData({ ...formData, [field]: value })
+  }
 
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
 
       {/* Hero */}
-      <section className="bg-gradient-to-br from-[#0A2A43] to-[#153D63] text-white py-20">
+      <section className="bg-gradient-theme text-white py-20">
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto text-center">
-            <MessageSquare className="h-16 w-16 text-[#C9A44A] mx-auto mb-6" />
+            <MessageSquare className="h-16 w-16 text-theme-accent mx-auto mb-6" />
             <h1 className="text-4xl lg:text-5xl font-serif font-bold mb-6">
               {locale === "fr"
                 ? "Contacter ETHSUN Executive Education Oxford"
@@ -113,18 +174,18 @@ export default function ContactPage() {
             {contactInfo.map((info, index) => (
               <Card key={index} className="border-none hover:shadow-xl transition-shadow">
                 <CardContent className="p-6 text-center">
-                  <div className="w-14 h-14 rounded-lg bg-[#C9A44A]/10 flex items-center justify-center mx-auto mb-4">
-                    <info.icon className="h-7 w-7 text-[#C9A44A]" />
+                  <div className="w-14 h-14 rounded-lg bg-[var(--color-accent,#C9A44A)]/10 flex items-center justify-center mx-auto mb-4">
+                    <info.icon className="h-7 w-7 text-theme-accent" />
                   </div>
-                  <h3 className="font-serif font-semibold text-[#0A2A43] mb-2">
+                  <h3 className="font-serif font-semibold text-theme-primary mb-2">
                     {locale === "fr" ? info.titleFr : locale === "es" ? info.titleEs : info.titleEn}
                   </h3>
                   {info.link ? (
-                    <a href={info.link} className="text-sm text-[#4A4A4A] hover:text-[#C9A44A] transition">
+                    <a href={info.link} className="text-sm text-theme-text hover:text-theme-accent transition">
                       {info.content}
                     </a>
                   ) : (
-                    <p className="text-sm text-[#4A4A4A]">
+                    <p className="text-sm text-theme-text">
                       {locale === "fr"
                         ? info.content
                         : locale === "es"
@@ -140,19 +201,19 @@ export default function ContactPage() {
       </section>
 
       {/* Contact Form */}
-      <section className="py-20 bg-[#F5F6F7]">
+      <section className="py-20 bg-theme-bg">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
             <div className="text-center mb-12">
-              <h2 className="text-3xl lg:text-4xl font-serif font-bold text-[#0A2A43] mb-4">
+              <h2 className="text-3xl lg:text-4xl font-serif font-bold text-theme-primary mb-4">
                 {locale === "fr"
                   ? "Envoyez-nous un Message"
                   : locale === "es"
                     ? "Envíenos un Mensaje"
                     : "Send us a Message"}
               </h2>
-              <div className="w-24 h-1 bg-[#C9A44A] mx-auto mb-6" />
-              <p className="text-[#4A4A4A]">
+              <div className="w-24 h-1 bg-theme-accent mx-auto mb-6" />
+              <p className="text-theme-text">
                 {locale === "fr"
                   ? "Complétez ce formulaire et nous vous répondrons dans les plus brefs délais."
                   : locale === "es"
@@ -163,113 +224,189 @@ export default function ContactPage() {
 
             <Card className="border-none shadow-xl">
               <CardContent className="p-8">
-                <form className="space-y-6">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="space-y-2">
-                      <Label htmlFor="firstName">
-                        {locale === "fr" ? "Prénom *" : locale === "es" ? "Nombre *" : "First Name *"}
-                      </Label>
-                      <Input id="firstName" required />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="lastName">
-                        {locale === "fr" ? "Nom *" : locale === "es" ? "Apellido *" : "Last Name *"}
-                      </Label>
-                      <Input id="lastName" required />
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="space-y-2">
-                      <Label htmlFor="email">Email *</Label>
-                      <Input id="email" type="email" required />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="phone">
-                        {locale === "fr" ? "Téléphone" : locale === "es" ? "Teléfono" : "Phone"}
-                      </Label>
-                      <Input id="phone" />
-                    </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="organization">
+                {success ? (
+                  <div className="text-center py-12">
+                    <CheckCircle className="h-16 w-16 text-green-500 mx-auto mb-4" />
+                    <h3 className="text-2xl font-serif font-bold text-theme-primary mb-2">
                       {locale === "fr"
-                        ? "Organisation / Entreprise"
+                        ? "Message envoyé !"
                         : locale === "es"
-                          ? "Organización / Empresa"
-                          : "Organization / Company"}
-                    </Label>
-                    <Input id="organization" />
+                          ? "¡Mensaje enviado!"
+                          : "Message sent!"}
+                    </h3>
+                    <p className="text-theme-text mb-6">
+                      {locale === "fr"
+                        ? "Nous vous répondrons dans les plus brefs délais."
+                        : locale === "es"
+                          ? "Le responderemos lo antes posible."
+                          : "We will respond to you as soon as possible."}
+                    </p>
+                    <Button
+                      onClick={() => setSuccess(false)}
+                      variant="outline"
+                    >
+                      {locale === "fr"
+                        ? "Envoyer un autre message"
+                        : locale === "es"
+                          ? "Enviar otro mensaje"
+                          : "Send another message"}
+                    </Button>
                   </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="subject">
-                      {locale === "fr" ? "Sujet de votre demande *" : locale === "es" ? "Asunto *" : "Subject *"}
-                    </Label>
-                    <Select>
-                      <SelectTrigger>
-                        <SelectValue
-                          placeholder={
-                            locale === "fr"
-                              ? "Sélectionnez un sujet"
-                              : locale === "es"
-                                ? "Seleccione un asunto"
-                                : "Select a subject"
-                          }
+                ) : (
+                  <form onSubmit={handleSubmit} className="space-y-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="space-y-2">
+                        <Label htmlFor="firstName">
+                          {locale === "fr" ? "Prénom *" : locale === "es" ? "Nombre *" : "First Name *"}
+                        </Label>
+                        <Input
+                          id="firstName"
+                          value={formData.firstName}
+                          onChange={(e) => handleChange("firstName", e.target.value)}
+                          required
                         />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="certificates">
-                          {locale === "fr"
-                            ? "Programmes Certifiants"
-                            : locale === "es"
-                              ? "Programas de Certificación"
-                              : "Certification Programs"}
-                        </SelectItem>
-                        <SelectItem value="academy">
-                          {locale === "fr"
-                            ? "Académie d'Entreprise"
-                            : locale === "es"
-                              ? "Academia Corporativa"
-                              : "Corporate Academy"}
-                        </SelectItem>
-                        <SelectItem value="franchise">
-                          {locale === "fr" ? "Franchise" : locale === "es" ? "Franquicia" : "Franchise"}
-                        </SelectItem>
-                        <SelectItem value="events">
-                          {locale === "fr" ? "Événements" : locale === "es" ? "Eventos" : "Events"}
-                        </SelectItem>
-                        <SelectItem value="partnership">
-                          {locale === "fr" ? "Partenariat" : locale === "es" ? "Asociación" : "Partnership"}
-                        </SelectItem>
-                        <SelectItem value="other">
-                          {locale === "fr" ? "Autre" : locale === "es" ? "Otro" : "Other"}
-                        </SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="lastName">
+                          {locale === "fr" ? "Nom *" : locale === "es" ? "Apellido *" : "Last Name *"}
+                        </Label>
+                        <Input
+                          id="lastName"
+                          value={formData.lastName}
+                          onChange={(e) => handleChange("lastName", e.target.value)}
+                          required
+                        />
+                      </div>
+                    </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="message">
-                      {locale === "fr" ? "Votre message *" : locale === "es" ? "Su mensaje *" : "Your message *"}
-                    </Label>
-                    <Textarea id="message" rows={6} required />
-                  </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="space-y-2">
+                        <Label htmlFor="email">Email *</Label>
+                        <Input
+                          id="email"
+                          type="email"
+                          value={formData.email}
+                          onChange={(e) => handleChange("email", e.target.value)}
+                          required
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="phone">
+                          {locale === "fr" ? "Téléphone" : locale === "es" ? "Teléfono" : "Phone"}
+                        </Label>
+                        <Input
+                          id="phone"
+                          value={formData.phone}
+                          onChange={(e) => handleChange("phone", e.target.value)}
+                        />
+                      </div>
+                    </div>
 
-                  <Button className="w-full bg-[#C9A44A] hover:bg-[#b08f3a] text-[#0A2A43] font-semibold text-lg py-6">
-                    <Send className="h-5 w-5 mr-2" />
-                    {locale === "fr" ? "Envoyer le Message" : locale === "es" ? "Enviar Mensaje" : "Send Message"}
-                  </Button>
+                    <div className="space-y-2">
+                      <Label htmlFor="organization">
+                        {locale === "fr"
+                          ? "Organisation / Entreprise"
+                          : locale === "es"
+                            ? "Organización / Empresa"
+                            : "Organization / Company"}
+                      </Label>
+                      <Input
+                        id="organization"
+                        value={formData.organization}
+                        onChange={(e) => handleChange("organization", e.target.value)}
+                      />
+                    </div>
 
-                  <p className="text-xs text-center text-[#4A4A4A]">
-                    {locale === "fr"
-                      ? "* Champs obligatoires. Nous nous engageons à protéger vos données personnelles."
-                      : locale === "es"
-                        ? "* Campos obligatorios. Nos comprometemos a proteger sus datos personales."
-                        : "* Required fields. We are committed to protecting your personal data."}
-                  </p>
-                </form>
+                    <div className="space-y-2">
+                      <Label htmlFor="subject">
+                        {locale === "fr" ? "Sujet de votre demande *" : locale === "es" ? "Asunto *" : "Subject *"}
+                      </Label>
+                      <Select
+                        value={formData.subject}
+                        onValueChange={(value) => handleChange("subject", value)}
+                      >
+                        <SelectTrigger>
+                          <SelectValue
+                            placeholder={
+                              locale === "fr"
+                                ? "Sélectionnez un sujet"
+                                : locale === "es"
+                                  ? "Seleccione un asunto"
+                                  : "Select a subject"
+                            }
+                          />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="certificates">
+                            {locale === "fr"
+                              ? "Programmes Certifiants"
+                              : locale === "es"
+                                ? "Programas de Certificación"
+                                : "Certification Programs"}
+                          </SelectItem>
+                          <SelectItem value="academy">
+                            {locale === "fr"
+                              ? "Académie d'Entreprise"
+                              : locale === "es"
+                                ? "Academia Corporativa"
+                                : "Corporate Academy"}
+                          </SelectItem>
+                          <SelectItem value="franchise">
+                            {locale === "fr" ? "Franchise" : locale === "es" ? "Franquicia" : "Franchise"}
+                          </SelectItem>
+                          <SelectItem value="events">
+                            {locale === "fr" ? "Événements" : locale === "es" ? "Eventos" : "Events"}
+                          </SelectItem>
+                          <SelectItem value="partnership">
+                            {locale === "fr" ? "Partenariat" : locale === "es" ? "Asociación" : "Partnership"}
+                          </SelectItem>
+                          <SelectItem value="other">
+                            {locale === "fr" ? "Autre" : locale === "es" ? "Otro" : "Other"}
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="message">
+                        {locale === "fr" ? "Votre message *" : locale === "es" ? "Su mensaje *" : "Your message *"}
+                      </Label>
+                      <Textarea
+                        id="message"
+                        rows={6}
+                        value={formData.message}
+                        onChange={(e) => handleChange("message", e.target.value)}
+                        required
+                      />
+                    </div>
+
+                    <Button
+                      type="submit"
+                      disabled={loading}
+                      className="w-full bg-[#C9A44A] hover:bg-[#b08f3a] text-[#0A2A43] font-semibold text-lg py-6"
+                    >
+                      {loading ? (
+                        <>
+                          <Loader2 className="h-5 w-5 mr-2 animate-spin" />
+                          {locale === "fr" ? "Envoi en cours..." : locale === "es" ? "Enviando..." : "Sending..."}
+                        </>
+                      ) : (
+                        <>
+                          <Send className="h-5 w-5 mr-2" />
+                          {locale === "fr" ? "Envoyer le Message" : locale === "es" ? "Enviar Mensaje" : "Send Message"}
+                        </>
+                      )}
+                    </Button>
+
+                    <p className="text-xs text-center text-[#4A4A4A]">
+                      {locale === "fr"
+                        ? "* Champs obligatoires. Nous nous engageons à protéger vos données personnelles."
+                        : locale === "es"
+                          ? "* Campos obligatorios. Nos comprometemos a proteger sus datos personales."
+                          : "* Required fields. We are committed to protecting your personal data."}
+                    </p>
+                  </form>
+                )}
               </CardContent>
             </Card>
           </div>
@@ -299,7 +436,7 @@ export default function ContactPage() {
                   <div className="space-y-2 text-sm">
                     <div className="flex items-center gap-2">
                       <Mail className="h-4 w-4 text-[#C9A44A]" />
-                      <a href={`mailto:${location.email}`} className="text-[#4A4A4A] hover:text-[#C9A44A] transition">
+                      <a href={`mailto:${location.email}`} className="text-[#4A4A4A] hover:text-[#C9A44A]">
                         {location.email}
                       </a>
                     </div>
@@ -312,35 +449,6 @@ export default function ContactPage() {
               </Card>
             ))}
           </div>
-        </div>
-      </section>
-
-      {/* WhatsApp Business */}
-      <section className="py-20 bg-[#F5F6F7]">
-        <div className="container mx-auto px-4">
-          <Card className="max-w-2xl mx-auto border-none shadow-xl">
-            <CardContent className="p-8 text-center">
-              <MessageSquare className="h-16 w-16 text-[#C9A44A] mx-auto mb-6" />
-              <h3 className="text-2xl font-serif font-bold text-[#0A2A43] mb-4">
-                {locale === "fr"
-                  ? "Contactez-nous sur WhatsApp Business"
-                  : locale === "es"
-                    ? "Contáctenos en WhatsApp Business"
-                    : "Contact us on WhatsApp Business"}
-              </h3>
-              <p className="text-[#4A4A4A] mb-6 leading-relaxed">
-                {locale === "fr"
-                  ? "Pour une réponse rapide, contactez notre équipe directement via WhatsApp Business."
-                  : locale === "es"
-                    ? "Para una respuesta rápida, contacte a nuestro equipo directamente a través de WhatsApp Business."
-                    : "For a quick response, contact our team directly via WhatsApp Business."}
-              </p>
-              <Button size="lg" className="bg-[#25D366] hover:bg-[#20BD5A] text-white">
-                <MessageSquare className="h-5 w-5 mr-2" />
-                {locale === "fr" ? "Ouvrir WhatsApp" : locale === "es" ? "Abrir WhatsApp" : "Open WhatsApp"}
-              </Button>
-            </CardContent>
-          </Card>
         </div>
       </section>
 
