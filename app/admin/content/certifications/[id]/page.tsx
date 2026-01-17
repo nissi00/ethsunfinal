@@ -17,6 +17,7 @@ import {
     Plus,
     Trash2,
     GripVertical,
+    Image as ImageIcon,
 } from "lucide-react"
 
 interface Module {
@@ -42,6 +43,7 @@ export default function EditCertificationPage() {
 
     const [loading, setLoading] = useState(!isNew)
     const [saving, setSaving] = useState(false)
+    const [uploadingImage, setUploadingImage] = useState(false)
     const [categories, setCategories] = useState<Category[]>([])
 
     const [formData, setFormData] = useState({
@@ -63,6 +65,7 @@ export default function EditCertificationPage() {
         debouchesFr: "[]",
         debouchesEn: "",
         debouchesEs: "",
+        imageUrl: "",
         isActive: true,
     })
 
@@ -109,6 +112,7 @@ export default function EditCertificationPage() {
                     debouchesFr: data.debouchesFr || "[]",
                     debouchesEn: data.debouchesEn || "",
                     debouchesEs: data.debouchesEs || "",
+                    imageUrl: data.imageUrl || "",
                     isActive: data.isActive,
                 })
                 setModules(data.modules || [])
@@ -124,6 +128,37 @@ export default function EditCertificationPage() {
             toast.error("Erreur lors du chargement")
         } finally {
             setLoading(false)
+        }
+    }
+
+    const handleFileUpload = async (file: File) => {
+        if (!file) return
+
+        setUploadingImage(true)
+        try {
+            const reader = new FileReader()
+            reader.onload = async (e) => {
+                const base64String = e.target?.result as string
+                const res = await fetch("/api/admin/certifications/upload", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ file: base64String }),
+                })
+
+                if (res.ok) {
+                    const data = await res.json()
+                    setFormData(prev => ({ ...prev, imageUrl: data.imageUrl }))
+                    toast.success("Image téléchargée avec succès")
+                } else {
+                    toast.error("Erreur lors du téléchargement")
+                }
+            }
+            reader.readAsDataURL(file)
+        } catch (error) {
+            toast.error("Erreur lors du traitement du fichier")
+            console.error(error)
+        } finally {
+            setUploadingImage(false)
         }
     }
 
@@ -230,7 +265,7 @@ export default function EditCertificationPage() {
                             onCheckedChange={checked => setFormData({ ...formData, isActive: checked })}
                         />
                     </div>
-                    <Button onClick={handleSubmit} disabled={saving}>
+                    <Button onClick={handleSubmit} disabled={saving || uploadingImage}>
                         {saving ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Save className="h-4 w-4 mr-2" />}
                         Enregistrer
                     </Button>
@@ -282,6 +317,50 @@ export default function EditCertificationPage() {
                                         ))}
                                     </SelectContent>
                                 </Select>
+                            </div>
+                        </div>
+
+                        {/* Image Upload */}
+                        <div className="space-y-2">
+                            <Label>Image d'illustration</Label>
+                            <div className="flex items-start gap-4">
+                                <div className="flex-1">
+                                    <Input
+                                        type="file"
+                                        accept="image/*"
+                                        disabled={uploadingImage}
+                                        onChange={(e) => {
+                                            if (e.target.files?.[0]) {
+                                                handleFileUpload(e.target.files[0])
+                                            }
+                                        }}
+                                        className="mb-2"
+                                    />
+                                    <p className="text-xs text-gray-500">
+                                        Format recommandé : JPG, PNG. Taille max : 2Mo.
+                                    </p>
+                                </div>
+                                {formData.imageUrl && (
+                                    <div className="relative w-32 h-24 rounded-lg overflow-hidden border bg-gray-100 flex-shrink-0">
+                                        <img
+                                            src={formData.imageUrl}
+                                            alt="Aperçu"
+                                            className="w-full h-full object-cover"
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={() => setFormData({ ...formData, imageUrl: "" })}
+                                            className="absolute top-1 right-1 bg-white/80 rounded-full p-1 hover:bg-white"
+                                        >
+                                            <Trash2 className="h-3 w-3 text-red-500" />
+                                        </button>
+                                    </div>
+                                )}
+                                {!formData.imageUrl && (
+                                    <div className="w-32 h-24 rounded-lg border-2 border-dashed border-gray-200 flex items-center justify-center flex-shrink-0 text-gray-400">
+                                        <ImageIcon className="h-6 w-6" />
+                                    </div>
+                                )}
                             </div>
                         </div>
 

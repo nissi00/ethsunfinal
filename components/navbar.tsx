@@ -8,15 +8,18 @@ import { Button } from "@/components/ui/button"
 import { LanguageSwitcher } from "@/components/language-switcher"
 import { type Locale, getTranslation } from "@/lib/i18n"
 import { useSiteSettings } from "@/components/site-settings-provider"
+import { useLanguage } from "@/components/language-provider"
+
 
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false)
-  const [locale, setLocale] = useState<Locale>("fr")
+  const { locale, setLocale } = useLanguage()
   const t = getTranslation(locale)
-  const settings = useSiteSettings()
+
+
 
   const navItems = [
-    { href: "/", label: t.nav.home },
+
     { href: "/certifications", label: t.nav.certifications },
     { href: "/events", label: t.nav.events },
     { href: "/corporate-academies", label: t.nav.corporateAcademies },
@@ -37,27 +40,34 @@ export function Navbar() {
         <div className="container mx-auto px-4 flex justify-between items-center text-sm">
           <div className="flex gap-6">
             <a
-              href={`mailto:${settings.contactEmail}`}
+              href={`mailto:${(useSiteSettings()).contactEmail}`}
               className="flex items-center gap-2 transition"
               style={{ color: "inherit" }}
               onMouseEnter={(e) => e.currentTarget.style.color = "var(--color-accent, #C9A44A)"}
               onMouseLeave={(e) => e.currentTarget.style.color = "inherit"}
             >
               <Mail className="h-4 w-4" />
-              <span className="hidden md:inline">{settings.contactEmail}</span>
+              <span className="hidden md:inline">{(useSiteSettings()).contactEmail}</span>
             </a>
             <a
-              href={`tel:${settings.contactPhone.replace(/\s/g, '')}`}
+              href={`tel:${(useSiteSettings()).contactPhone.replace(/\s/g, '')}`}
               className="flex items-center gap-2 transition"
               style={{ color: "inherit" }}
               onMouseEnter={(e) => e.currentTarget.style.color = "var(--color-accent, #C9A44A)"}
               onMouseLeave={(e) => e.currentTarget.style.color = "inherit"}
             >
               <Phone className="h-4 w-4" />
-              <span className="hidden md:inline">{settings.contactPhone}</span>
+              <span className="hidden md:inline">{(useSiteSettings()).contactPhone}</span>
             </a>
+            <div className="h-4 w-px bg-white/20 mx-2" />
+            <Link
+              href="/recruitment"
+              className="flex items-center gap-2 transition hover:text-[#C9A44A]"
+            >
+              <span className="font-semibold">Recrutement</span>
+            </Link>
           </div>
-          <LanguageSwitcher currentLocale={locale} onLocaleChange={setLocale} />
+          <LanguageSwitcher />
         </div>
       </div>
 
@@ -71,12 +81,13 @@ export function Navbar() {
 
             {/* Logo + Brand */}
             <Link href="/" className="flex items-center gap-3">
+
               <Image
                 src="/ethsun logo.png"
                 alt="ETHSUN Logo"
-                width={60}
-                height={60}
-                className="object-contain"
+                width={100}
+                height={80}
+                className="rounded-full object-cover"
                 priority
               />
 
@@ -88,7 +99,7 @@ export function Navbar() {
                   className="text-xs tracking-wide"
                   style={{ color: "var(--color-accent, #C9A44A)" }}
                 >
-                  Executive Education · Oxford
+                  Executive Education <br /> Oxford
                 </span>
               </div>
             </Link>

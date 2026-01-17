@@ -42,6 +42,16 @@ import {
     DialogTitle,
 } from "@/components/ui/dialog"
 import { toast } from "sonner"
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
 
 interface InscriptionSubmission {
     id: string
@@ -55,6 +65,8 @@ interface InscriptionSubmission {
     motivation: string | null
     status: string
     createdAt: string
+    cvUrl?: string | null
+    lastDiploma?: string | null
 }
 
 const statusConfig = {
@@ -69,6 +81,7 @@ export default function InscriptionSubmissionsPage() {
     const [search, setSearch] = useState("")
     const [statusFilter, setStatusFilter] = useState("all")
     const [selectedSubmission, setSelectedSubmission] = useState<InscriptionSubmission | null>(null)
+    const [deleteId, setDeleteId] = useState<string | null>(null)
 
     async function fetchSubmissions() {
         try {
@@ -106,26 +119,32 @@ export default function InscriptionSubmissionsPage() {
             if (res.ok) {
                 toast.success("Statut mis à jour")
                 fetchSubmissions()
+                if (selectedSubmission && selectedSubmission.id === id) {
+                    setSelectedSubmission({ ...selectedSubmission, status })
+                }
             }
         } catch (error) {
             toast.error("Erreur lors de la mise à jour")
         }
     }
 
-    async function deleteSubmission(id: string) {
-        if (!confirm("Êtes-vous sûr de vouloir supprimer cette inscription ?")) return
+    async function deleteSubmission() {
+        if (!deleteId) return
 
         try {
-            const res = await fetch(`/api/forms/inscription/${id}`, {
+            const res = await fetch(`/api/forms/inscription/${deleteId}`, {
                 method: "DELETE",
             })
 
             if (res.ok) {
                 toast.success("Inscription supprimée")
                 fetchSubmissions()
+                if (selectedSubmission?.id === deleteId) setSelectedSubmission(null)
             }
         } catch (error) {
             toast.error("Erreur lors de la suppression")
+        } finally {
+            setDeleteId(null)
         }
     }
 
@@ -259,6 +278,11 @@ export default function InscriptionSubmissionsPage() {
                                                         <span className="text-sm text-gray-500">
                                                             {submission.email}
                                                         </span>
+                                                        {submission.cvUrl && (
+                                                            <span className="text-xs text-blue-600 font-medium flex items-center mt-1">
+                                                                <Download className="h-3 w-3 mr-1" /> CV Disponible
+                                                            </span>
+                                                        )}
                                                     </div>
                                                 </td>
                                                 <td className="px-4 py-4">
@@ -282,7 +306,12 @@ export default function InscriptionSubmissionsPage() {
                                                             </Button>
                                                         </DropdownMenuTrigger>
                                                         <DropdownMenuContent align="end">
-                                                            <DropdownMenuItem onClick={() => setSelectedSubmission(submission)}>
+                                                            <DropdownMenuItem onClick={() => {
+                                                                setSelectedSubmission(submission)
+                                                                if (submission.status === "new") {
+                                                                    updateStatus(submission.id, "in_progress")
+                                                                }
+                                                            }}>
                                                                 <Eye className="h-4 w-4 mr-2" />
                                                                 Voir détails
                                                             </DropdownMenuItem>
@@ -295,7 +324,7 @@ export default function InscriptionSubmissionsPage() {
                                                                 Marquer traité
                                                             </DropdownMenuItem>
                                                             <DropdownMenuItem
-                                                                onClick={() => deleteSubmission(submission.id)}
+                                                                onClick={() => setDeleteId(submission.id)}
                                                                 className="text-red-600"
                                                             >
                                                                 <Trash2 className="h-4 w-4 mr-2" />
@@ -354,7 +383,30 @@ export default function InscriptionSubmissionsPage() {
                                         {selectedSubmission.profile}
                                     </div>
                                 )}
+                                {selectedSubmission.lastDiploma && (
+                                    <div className="flex items-center gap-2 text-sm col-span-2">
+                                        <GraduationCap className="h-4 w-4 text-[#C9A44A]" />
+                                        <span className="font-medium text-gray-700">Dernier diplôme:</span> {selectedSubmission.lastDiploma}
+                                    </div>
+                                )}
                             </div>
+
+                            {selectedSubmission.cvUrl && (
+                                <div className="p-3 bg-blue-50 border border-blue-100 rounded-md flex items-center justify-between">
+                                    <div className="flex items-center gap-2">
+                                        <Download className="h-5 w-5 text-blue-600" />
+                                        <span className="text-sm font-medium text-blue-900">Curriculum Vitae joint</span>
+                                    </div>
+                                    <a
+                                        href={selectedSubmission.cvUrl}
+                                        download={`CV_${selectedSubmission.lastName}_${selectedSubmission.firstName}`}
+                                        className="text-sm bg-white text-blue-700 hover:bg-blue-50 border border-blue-200 px-3 py-1 rounded shadow-sm transition-colors"
+                                    >
+                                        Télécharger
+                                    </a>
+                                </div>
+                            )}
+
                             <div>
                                 <div className="text-sm font-medium text-gray-500 mb-1">Programme souhaité</div>
                                 <div className="flex items-center gap-2">
@@ -394,6 +446,24 @@ export default function InscriptionSubmissionsPage() {
                     )}
                 </DialogContent>
             </Dialog>
+
+            {/* Delete Alert Dialog */}
+            <AlertDialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Êtes-vous sûr ?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            Cette action est irréversible. Cela supprimera définitivement cette inscription et toutes les données associées.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel>Annuler</AlertDialogCancel>
+                        <AlertDialogAction onClick={deleteSubmission} className="bg-red-600 hover:bg-red-700">
+                            Supprimer
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
         </div>
     )
 }

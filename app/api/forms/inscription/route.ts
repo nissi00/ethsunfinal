@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
 import prisma from "@/lib/prisma"
+import { sendSubmissionEmails } from "@/lib/email-service"
 
 // POST - Créer une nouvelle inscription
 export async function POST(request: NextRequest) {
@@ -27,9 +28,20 @@ export async function POST(request: NextRequest) {
                 program,
                 profile: profile || null,
                 motivation: motivation || null,
+                cvUrl: body.cvUrl || null,
+                lastDiploma: body.lastDiploma || null,
                 status: "new",
             },
         })
+
+        // Envoyer les emails
+        await sendSubmissionEmails(
+            "Inscription",
+            submission,
+            email,
+            firstName,
+            "Demande d'inscription"
+        )
 
         return NextResponse.json(
             { success: true, message: "Inscription envoyée avec succès", id: submission.id },

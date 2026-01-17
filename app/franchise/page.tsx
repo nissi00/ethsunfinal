@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useContext, useState } from "react"
 import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
 import { Button } from "@/components/ui/button"
@@ -22,6 +22,8 @@ import {
   Loader2,
 } from "lucide-react"
 import type { Locale } from "@/lib/i18n"
+import { getTranslation } from "@/lib/i18n"
+import { LanguageContext } from "@/components/language-provider"
 import { toast } from "sonner"
 
 const offerings = [
@@ -168,6 +170,8 @@ const steps = [
     titleEn: "Application Form",
     titleEs: "Formulario de Solicitud",
     descFr: "Exprimez votre intérêt et présentez votre projet",
+    descEn: "Express your interest and present your project",
+    descEs: "Exprese su interés y presente su proyecto",
   },
   {
     number: "02",
@@ -175,6 +179,8 @@ const steps = [
     titleEn: "Qualification Interview",
     titleEs: "Entrevista de Calificación",
     descFr: "Analyse de votre profil et de vos objectifs",
+    descEn: "Analysis of your profile and objectives",
+    descEs: "Análisis de su perfil y objetivos",
   },
   {
     number: "03",
@@ -182,6 +188,8 @@ const steps = [
     titleEn: "Application Validation",
     titleEs: "Validación de Solicitud",
     descFr: "Évaluation de la conformité juridique et stratégique",
+    descEn: "Evaluation of legal and strategic compliance",
+    descEs: "Evaluación de la conformidad legal y estratégica",
   },
   {
     number: "04",
@@ -189,6 +197,8 @@ const steps = [
     titleEn: "Confidential Presentation",
     titleEs: "Presentación Confidencial",
     descFr: "Conditions financières et modèle économique détaillés",
+    descEn: "Financial terms and detailed business model",
+    descEs: "Términos financieros y modelo económico detallado",
   },
   {
     number: "05",
@@ -196,6 +206,8 @@ const steps = [
     titleEn: "Signing & Training",
     titleEs: "Firma y Formación",
     descFr: "Contrat, installation LMS et formation initiale",
+    descEn: "Contract, LMS setup and initial training",
+    descEs: "Contrato, instalación del LMS y formación inicial",
   },
   {
     number: "06",
@@ -203,11 +215,15 @@ const steps = [
     titleEn: "Official Launch",
     titleEs: "Lanzamiento Oficial",
     descFr: "Accompagnement lors des premières opérations",
+    descEn: "Support during initial operations",
+    descEs: "Acompañamiento durante las operaciones iniciales",
   },
 ]
 
 export default function FranchisePage() {
-  const [locale] = useState<Locale>("fr")
+  const context = useContext(LanguageContext)
+  const locale = (context?.locale as Locale) || "fr"
+  const t = getTranslation(locale)
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)
   const [formData, setFormData] = useState({

@@ -5,6 +5,7 @@ import { Analytics } from "@vercel/analytics/next"
 import { Toaster } from "sonner"
 import { SiteSettingsProvider } from "@/components/site-settings-provider"
 import "./globals.css"
+import { LanguageProvider } from "@/components/language-provider"
 
 const lato = Lato({
   weight: ["300", "400", "700"],
@@ -50,13 +51,16 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="fr" className={`${lato.variable} ${merriweather.variable}`}>
-      <body className="font-sans antialiased">
-        <SiteSettingsProvider>
-          {children}
-        </SiteSettingsProvider>
-        <Toaster richColors position="top-right" />
-        <Analytics />
-      </body>
+        <body className="font-sans antialiased">
+          <SiteSettingsProvider>
+            <LanguageProvider>
+              {children}
+            </LanguageProvider>
+          </SiteSettingsProvider>
+
+          <Toaster richColors position="top-right" />
+          <Analytics />
+        </body>
     </html>
   )
 }

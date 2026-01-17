@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useContext, useState } from "react"
 import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
 import { Button } from "@/components/ui/button"
@@ -11,6 +11,8 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Mail, Phone, MapPin, Clock, Send, MessageSquare, CheckCircle, Loader2 } from "lucide-react"
 import type { Locale } from "@/lib/i18n"
+import { getTranslation } from "@/lib/i18n"
+import { LanguageContext } from "@/components/language-provider"
 import { toast } from "sonner"
 
 const contactInfo = [
@@ -78,7 +80,9 @@ const franchiseLocations = [
 ]
 
 export default function ContactPage() {
-  const [locale] = useState<Locale>("fr")
+  const context = useContext(LanguageContext)
+  const locale = (context?.locale as Locale) || "fr"
+  const t = getTranslation(locale)
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)
   const [formData, setFormData] = useState({

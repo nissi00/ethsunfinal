@@ -1,13 +1,16 @@
 "use client"
 
-import { useState } from "react"
+import { useContext, useState } from "react"
 import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { FileText, Download, BookOpen, Newspaper, Video, File } from "lucide-react"
+import { SocialShare } from "@/components/social-share"
 import type { Locale } from "@/lib/i18n"
+import { getTranslation } from "@/lib/i18n"
+import { LanguageContext } from "@/components/language-provider"
 
 const catalogues = [
   {
@@ -126,7 +129,9 @@ const reports = [
 ]
 
 export default function ResourcesPage() {
-  const [locale] = useState<Locale>("fr")
+  const context = useContext(LanguageContext)
+  const locale = (context?.locale as Locale) || "fr"
+  const t = getTranslation(locale)
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -258,9 +263,15 @@ export default function ResourcesPage() {
                       <h3 className="text-xl font-serif font-semibold text-theme-primary mb-2">
                         {locale === "fr" ? article.titleFr : locale === "es" ? article.titleEs : article.titleEn}
                       </h3>
-                      <Button variant="link" className="text-theme-accent p-0 h-auto">
-                        {locale === "fr" ? "Lire l'article" : locale === "es" ? "Leer artículo" : "Read article"} →
-                      </Button>
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                        <Button variant="link" className="text-theme-accent p-0 h-auto self-start">
+                          {locale === "fr" ? "Lire l'article" : locale === "es" ? "Leer artículo" : "Read article"} →
+                        </Button>
+                        <SocialShare
+                          url={`https://ethsun-oxford.uk/resources/articles/${index}`}
+                          title={locale === "fr" ? article.titleFr : locale === "es" ? article.titleEs : article.titleEn}
+                        />
+                      </div>
                     </div>
                   </div>
                 </CardContent>

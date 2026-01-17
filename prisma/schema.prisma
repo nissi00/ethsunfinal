@@ -7,9 +7,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// ============================================
-// UTILISATEURS ADMIN
-// ============================================
 model User {
   id        String   @id @default(cuid())
   email     String   @unique
@@ -20,9 +17,6 @@ model User {
   updatedAt DateTime @updatedAt
 }
 
-// ============================================
-// SOUMISSIONS DE FORMULAIRES
-// ============================================
 model ContactSubmission {
   id           String   @id @default(cuid())
   firstName    String
@@ -32,24 +26,26 @@ model ContactSubmission {
   organization String?
   subject      String
   message      String
-  status       String   @default("new") // new, in_progress, completed
+  status       String   @default("new")
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 }
 
 model InscriptionSubmission {
-  id         String   @id @default(cuid())
-  firstName  String
-  lastName   String
-  email      String
-  phone      String?
-  country    String?
-  program    String
-  profile    String?
-  motivation String?
-  status     String   @default("new") // new, in_progress, completed
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  id          String   @id @default(cuid())
+  firstName   String
+  lastName    String
+  email       String
+  phone       String?
+  country     String?
+  program     String
+  profile     String?
+  motivation  String?
+  status      String   @default("new")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  cvUrl       String?
+  lastDiploma String?
 }
 
 model FranchiseSubmission {
@@ -63,39 +59,45 @@ model FranchiseSubmission {
   organization String?
   motivation   String?
   project      String?
-  status       String   @default("new") // new, in_progress, completed
+  status       String   @default("new")
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 }
 
-// ============================================
-// PARAMÈTRES DU SITE
-// ============================================
-model SiteSettings {
-  id             String @id @default("main")
-  // Couleurs du thème
-  primaryColor   String @default("#0A2A43")
-  secondaryColor String @default("#153D63")
-  accentColor    String @default("#C9A44A")
-  textColor      String @default("#4A4A4A")
-  bgColor        String @default("#F5F6F7")
-  // Informations de contact
-  contactEmail   String @default("info@ethsun-oxford.uk")
-  contactPhone   String @default("+44 74 2420 1585")
-  address        String @default("Oxford, United Kingdom")
-  adminEmail     String @default("admin@ethsun-oxford.uk")
-  // Réseaux sociaux
-  facebookUrl    String @default("")
-  twitterUrl     String @default("")
-  linkedinUrl    String @default("")
-  instagramUrl   String @default("")
-  whatsappNumber String @default("")
+model RecruitmentSubmission {
+  id             String   @id @default(cuid())
+  firstName      String
+  lastName       String
+  email          String
+  phone          String
+  role           String
+  cvUrl          String
+  coverLetterUrl String?
+  diplomaUrl     String?
+  status         String   @default("new")
+  createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 }
 
-// ============================================
-// STATISTIQUES PAGE D'ACCUEIL
-// ============================================
+model SiteSettings {
+  id             String   @id @default("main")
+  primaryColor   String   @default("#0A2A43")
+  secondaryColor String   @default("#153D63")
+  accentColor    String   @default("#C9A44A")
+  textColor      String   @default("#4A4A4A")
+  bgColor        String   @default("#F5F6F7")
+  contactEmail   String   @default("info@ethsun-oxford.uk")
+  contactPhone   String   @default("+44 74 2420 1585")
+  address        String   @default("Oxford, United Kingdom")
+  adminEmail     String   @default("admin@ethsun-oxford.uk")
+  facebookUrl    String   @default("")
+  twitterUrl     String   @default("")
+  linkedinUrl    String   @default("")
+  instagramUrl   String   @default("")
+  whatsappNumber String   @default("")
+  updatedAt      DateTime @updatedAt
+}
+
 model Stat {
   id        String   @id @default(cuid())
   value     String
@@ -108,9 +110,6 @@ model Stat {
   updatedAt DateTime @updatedAt
 }
 
-// ============================================
-// TÉMOIGNAGES
-// ============================================
 model Testimonial {
   id        String   @id @default(cuid())
   textFr    String
@@ -125,9 +124,6 @@ model Testimonial {
   updatedAt DateTime @updatedAt
 }
 
-// ============================================
-// CATÉGORIES DE CERTIFICATION
-// ============================================
 model CertificationCategory {
   id             String          @id @default(cuid())
   slug           String          @unique
@@ -136,66 +132,106 @@ model CertificationCategory {
   nameEs         String?
   sortOrder      Int             @default(0)
   isActive       Boolean         @default(true)
-  certifications Certification[]
   createdAt      DateTime        @default(now())
   updatedAt      DateTime        @updatedAt
+  certifications Certification[]
 }
 
-// ============================================
-// CERTIFICATIONS / FORMATIONS
-// ============================================
 model Certification {
   id            String                 @id @default(cuid())
   slug          String                 @unique
   categoryId    String?
-  category      CertificationCategory? @relation(fields: [categoryId], references: [id])
-  // Titres multilingues
   titleFr       String
   titleEn       String?
   titleEs       String?
-  // Infos générales
   duration      String
   level         String
   price         String
   startDate     String?
-  // Descriptions multilingues
   descriptionFr String
   descriptionEn String?
   descriptionEs String?
-  // Objectifs (JSON arrays)
   objectifsFr   String                 @default("[]")
   objectifsEn   String?
   objectifsEs   String?
-  // Débouchés (JSON arrays)
   debouchesFr   String                 @default("[]")
   debouchesEn   String?
   debouchesEs   String?
-  // État
   isActive      Boolean                @default(true)
   sortOrder     Int                    @default(0)
-  // Relations
-  modules       CertificationModule[]
   createdAt     DateTime               @default(now())
   updatedAt     DateTime               @updatedAt
+  imageUrl      String?
+  category      CertificationCategory? @relation(fields: [categoryId], references: [id])
+  modules       CertificationModule[]
 }
 
-// ============================================
-// MODULES DE CERTIFICATION
-// ============================================
 model CertificationModule {
   id              String        @id @default(cuid())
   certificationId String
-  certification   Certification @relation(fields: [certificationId], references: [id], onDelete: Cascade)
-  // Titres multilingues
   titleFr         String
   titleEn         String?
   titleEs         String?
-  // Descriptions multilingues
   descriptionFr   String
   descriptionEn   String?
   descriptionEs   String?
   sortOrder       Int           @default(0)
   createdAt       DateTime      @default(now())
   updatedAt       DateTime      @updatedAt
+  certification   Certification @relation(fields: [certificationId], references: [id], onDelete: Cascade)
 }
 
+model Partner {
+  id        String   @id @default(cuid())
+  name      String
+  logoUrl   String
+  website   String?
+  sortOrder Int      @default(0)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Event {
+  id              String   @id @default(cuid())
+  titleFr         String
+  titleEn         String?
+  titleEs         String?
+  descriptionFr   String
+  descriptionEn   String?
+  descriptionEs   String?
+  type            String
+  date            String
+  location        String
+  capacity        Int?
+  registrationUrl String?
+  imageUrl        String?
+  isActive        Boolean  @default(true)
+  sortOrder       Int      @default(0)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  contentEn       String?
+  contentEs       String?
+  contentFr       String?
+}
+
+model JobOffer {
+  id               String   @id @default(cuid())
+  titleFr          String
+  titleEn          String?
+  titleEs          String?
+  descriptionFr    String
+  descriptionEn    String?
+  descriptionEs    String?
+  startDate        String?
+  qualificationsFr String?
+  qualificationsEn String?
+  qualificationsEs String?
+  whyJoinUsFr      String?
+  whyJoinUsEn      String?
+  whyJoinUsEs      String?
+  isActive         Boolean  @default(true)
+  sortOrder        Int      @default(0)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}

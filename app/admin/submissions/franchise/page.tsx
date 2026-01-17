@@ -285,7 +285,12 @@ export default function FranchiseSubmissionsPage() {
                                                             </Button>
                                                         </DropdownMenuTrigger>
                                                         <DropdownMenuContent align="end">
-                                                            <DropdownMenuItem onClick={() => setSelectedSubmission(submission)}>
+                                                            <DropdownMenuItem onClick={() => {
+                                                                setSelectedSubmission(submission)
+                                                                if (submission.status === "new") {
+                                                                    updateStatus(submission.id, "in_progress")
+                                                                }
+                                                            }}>
                                                                 <Eye className="h-4 w-4 mr-2" />
                                                                 Voir détails
                                                             </DropdownMenuItem>

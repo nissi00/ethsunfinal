@@ -1,13 +1,15 @@
 "use client"
 
-import { useState } from "react"
+import { useContext } from "react"
 import Link from "next/link"
 import { Mail, Phone, MapPin, Facebook, Twitter, Linkedin, Instagram } from "lucide-react"
 import { type Locale, getTranslation } from "@/lib/i18n"
 import { useSiteSettings } from "@/components/site-settings-provider"
+import { LanguageContext } from "@/components/language-provider"
 
 export function Footer() {
-  const [locale] = useState<Locale>("fr")
+  const context = useContext(LanguageContext)
+  const locale = (context?.locale as Locale) || "fr"
   const t = getTranslation(locale)
   const settings = useSiteSettings()
 

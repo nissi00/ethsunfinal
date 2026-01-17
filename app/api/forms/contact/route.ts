@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
 import prisma from "@/lib/prisma"
+import { sendSubmissionEmails } from "@/lib/email-service"
 
 // POST - Créer une nouvelle soumission de contact
 export async function POST(request: NextRequest) {
@@ -30,14 +31,27 @@ export async function POST(request: NextRequest) {
             },
         })
 
+        // Envoyer les emails
+        await sendSubmissionEmails(
+            "Contact",
+            submission,
+            email,
+            firstName,
+            "Prise de contact"
+        )
+
         return NextResponse.json(
             { success: true, message: "Message envoyé avec succès", id: submission.id },
             { status: 201 }
         )
-    } catch (error) {
-        console.error("Error creating contact submission:", error)
+    } catch (error: any) {
+        console.error("DETAILED ERROR creating contact submission:", {
+            message: error.message,
+            stack: error.stack,
+            error: error
+        })
         return NextResponse.json(
-            { error: "Erreur lors de l'envoi du message" },
+            { error: `Erreur lors de l'envoi du message: ${error.message || 'Unknown error'}` },
             { status: 500 }
         )
     }

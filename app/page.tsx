@@ -1,17 +1,20 @@
 "use client"
 
-import { useState } from "react"
+import { useContext } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
 import { StatsDisplay } from "@/components/stats-display"
+
 import { Calendar, Building2, Users, Globe, Award, BookOpen, Target } from "lucide-react"
 import { type Locale, getTranslation } from "@/lib/i18n"
 import Link from "next/link"
+import { LanguageContext } from "@/components/language-provider"
 
 export default function Home() {
-  const [locale] = useState<Locale>("fr")
+  const context = useContext(LanguageContext)
+  const locale = (context?.locale as Locale) || "fr"
   const t = getTranslation(locale)
 
   const features = [
@@ -53,12 +56,25 @@ export default function Home() {
 
       {/* Hero Section - Using CSS variables */}
       <section
-        className="relative text-white py-24 lg:py-32"
+        className="relative text-white pt-24 lg:pt-32 pb-24 overflow-hidden"
         style={{
           background: `linear-gradient(135deg, var(--color-primary, #0A2A43), var(--color-secondary, #153D63), var(--color-primary, #0A2A43))`
         }}
       >
-        <div className="absolute inset-0 bg-[url('/oxford-university-architecture.jpg')] bg-cover bg-center opacity-10" />
+        {/* Background Video */}
+        <video
+          autoPlay
+          muted
+          loop
+          playsInline
+          className="absolute inset-0 top-0 left-0 w-full h-full object-cover"
+        >
+          <source src="/hero-video.mp4" type="video/mp4" />
+          Your browser does not support the video tag.
+        </video>
+
+        {/* Overlay pour lisibilité */}
+        <div className="absolute inset-0 bg-black/50" />
         <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-4xl mx-auto text-center">
             <div
@@ -74,7 +90,7 @@ export default function Home() {
                 className="font-semibold text-sm"
                 style={{ color: "var(--color-accent, #C9A44A)" }}
               >
-                Oxford, United Kingdom
+                {t.home.oxford}
               </span>
             </div>
             <h1 className="text-4xl lg:text-6xl font-serif font-bold mb-6 text-balance leading-tight">
@@ -120,7 +136,7 @@ export default function Home() {
               className="text-3xl lg:text-5xl font-serif font-bold mb-4 text-balance"
               style={{ color: "var(--color-primary, #0A2A43)" }}
             >
-              {locale === "fr" ? "Nos Services" : locale === "es" ? "Nuestros Servicios" : "Our Services"}
+              {t.home.offers}
             </h2>
             <div
               className="w-24 h-1 mx-auto"
@@ -179,11 +195,7 @@ export default function Home() {
               className="text-3xl lg:text-5xl font-serif font-bold mb-4 text-balance"
               style={{ color: "var(--color-primary, #0A2A43)" }}
             >
-              {locale === "fr"
-                ? "Nos Certificats Executives"
-                : locale === "es"
-                  ? "Nuestros Certificados Ejecutivos"
-                  : "Our Executive Certificates"}
+              {t.home.certificatesTitle}
             </h2>
             <div
               className="w-24 h-1 mx-auto mb-6"
@@ -193,32 +205,28 @@ export default function Home() {
               className="max-w-2xl mx-auto text-pretty leading-relaxed"
               style={{ color: "var(--color-text, #4A4A4A)" }}
             >
-              {locale === "fr"
-                ? "Des programmes de formation certifiants conçus pour développer des compétences stratégiques et opérationnelles."
-                : locale === "es"
-                  ? "Programas de formación certificados diseñados para desarrollar habilidades estratégicas y operativas."
-                  : "Certification training programs designed to develop strategic and operational skills."}
+              {t.home.certificatesDesc}
             </p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
             {[
               {
                 slug: "leadership-strategique-et-gouvernance",
-                title: locale === "fr" ? "Leadership Stratégique" : "Strategic Leadership",
-                category: "Management",
-                duration: "4 semaines",
+                title: t.home.leadership,
+                category: t.home.management,
+                duration: t.home.fourWeeks,
               },
               {
                 slug: "gouvernance-publique-administration",
-                title: locale === "fr" ? "Gouvernance Publique" : "Public Governance",
-                category: locale === "fr" ? "Gouvernance" : "Governance",
-                duration: "6 semaines",
+                title: t.home.governance,
+                category: t.home.governanceCategory,
+                duration: t.home.sixWeeks,
               },
               {
                 slug: "ethique-professionnelle-deontologie",
-                title: locale === "fr" ? "Éthique et Conformité" : "Ethics & Compliance",
-                category: locale === "fr" ? "Éthique" : "Ethics",
-                duration: "5 semaines",
+                title: t.home.ethics,
+                category: t.home.ethicsCategory,
+                duration: t.home.fiveWeeks,
               },
             ].map((cert, index) => (
               <Card key={index} className="hover:shadow-xl transition-shadow border-none overflow-hidden">
@@ -263,7 +271,7 @@ export default function Home() {
                       className="w-full text-white"
                       style={{ backgroundColor: "var(--color-secondary, #153D63)" }}
                     >
-                      {t.cta.learnMore}
+                      {t.cta.learnmore1}
                     </Button>
                   </Link>
                 </CardContent>
@@ -288,6 +296,8 @@ export default function Home() {
         </div>
       </section>
 
+
+
       {/* CTA Section - Using CSS variables */}
       <section
         className="py-20 text-white"
@@ -301,18 +311,10 @@ export default function Home() {
             style={{ color: "var(--color-accent, #C9A44A)" }}
           />
           <h2 className="text-3xl lg:text-4xl font-serif font-bold mb-6 text-balance">
-            {locale === "fr"
-              ? "Prêt à Transformer Votre Organisation ?"
-              : locale === "es"
-                ? "¿Listo para Transformar su Organización?"
-                : "Ready to Transform Your Organization?"}
+            {t.home.cta}
           </h2>
           <p className="text-lg text-gray-200 mb-8 max-w-2xl mx-auto text-pretty leading-relaxed">
-            {locale === "fr"
-              ? "Rejoignez des milliers de professionnels qui ont choisi ETHSUN pour leur développement."
-              : locale === "es"
-                ? "Únase a miles de profesionales que han elegido ETHSUN para su desarrollo."
-                : "Join thousands of professionals who have chosen ETHSUN for their development."}
+            {t.home.ctaDesc}
           </p>
           <Link href="/contact">
             <Button

@@ -1,12 +1,15 @@
 "use client"
 
-import { useState } from "react"
+import { useContext, useState } from "react"
 import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Building2, Target, Heart, Award, Globe, Users, CheckCircle, MapPin, TrendingUp, Shield } from "lucide-react"
 import type { Locale } from "@/lib/i18n"
+import { getTranslation } from "@/lib/i18n"
+import { LanguageContext } from "@/components/language-provider"
+import { PartnerCarousel } from "@/components/partner-carousel"
 
 const values = [
   {
@@ -149,17 +152,12 @@ const standards = [
   },
 ]
 
-const partners = [
-  "Universités Internationales",
-  "Institutions Gouvernementales",
-  "Organisations Internationales",
-  "Entreprises Multinationales",
-  "Cabinets de Conseil",
-  "Fondations Académiques",
-]
+
 
 export default function AboutPage() {
-  const [locale] = useState<Locale>("fr")
+  const context = useContext(LanguageContext)
+  const locale = (context?.locale as Locale) || "fr"
+  const t = getTranslation(locale)
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -401,26 +399,7 @@ export default function AboutPage() {
       </section>
 
       {/* Partners */}
-      <section className="py-20 bg-theme-bg">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl lg:text-4xl font-serif font-bold text-theme-primary mb-4">
-              {locale === "fr" ? "Nos Partenaires" : locale === "es" ? "Nuestros Socios" : "Our Partners"}
-            </h2>
-            <div className="w-24 h-1 bg-theme-accent mx-auto" />
-          </div>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
-            {partners.map((partner, index) => (
-              <Card key={index} className="border-none bg-white">
-                <CardContent className="p-6 text-center">
-                  <CheckCircle className="h-8 w-8 text-theme-accent mx-auto mb-2" />
-                  <p className="text-sm font-semibold text-theme-primary">{partner}</p>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
+      <PartnerCarousel />
 
       <Footer />
     </div>

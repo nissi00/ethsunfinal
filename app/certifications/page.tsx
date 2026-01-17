@@ -1,14 +1,16 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useContext, useEffect, useState } from "react"
 import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Badge } from "@/components/ui/badge"
-import { BookOpen, Clock, Award, Users, CheckCircle, Star, Globe, Loader2 } from "lucide-react"
+import { Input } from "@/components/ui/input"
+import { BookOpen, Clock, Award, Users, CheckCircle, Star, Globe, Loader2, Search } from "lucide-react"
 import { type Locale, getTranslation } from "@/lib/i18n"
+import { LanguageContext } from "@/components/language-provider"
 import Link from "next/link"
 
 interface Certification {
@@ -20,6 +22,7 @@ interface Certification {
   duration: string
   level: string
   price: string
+  imageUrl?: string
   isActive: boolean
 }
 
@@ -34,11 +37,13 @@ interface Category {
 }
 
 export default function CertificationsPage() {
-  const [locale] = useState<Locale>("fr")
+  const context = useContext(LanguageContext)
+  const locale = (context?.locale as Locale) || "fr"
   const t = getTranslation(locale)
   const [categories, setCategories] = useState<Category[]>([])
   const [loading, setLoading] = useState(true)
   const [selectedCategory, setSelectedCategory] = useState<string>("")
+  const [searchQuery, setSearchQuery] = useState<string>("")
 
   useEffect(() => {
     async function fetchCategories() {
@@ -84,6 +89,20 @@ export default function CertificationsPage() {
     }
   }
 
+  function getFilteredCategories() {
+    if (!searchQuery.trim()) {
+      return categories
+    }
+    
+    const query = searchQuery.toLowerCase()
+    return categories.map((category) => ({
+      ...category,
+      certifications: category.certifications.filter((cert) =>
+        getCertTitle(cert).toLowerCase().includes(query)
+      ),
+    }))
+  }
+
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
@@ -94,10 +113,10 @@ export default function CertificationsPage() {
           <div className="max-w-3xl mx-auto text-center">
             <h1 className="text-4xl lg:text-5xl font-serif font-bold mb-6">
               {locale === "fr"
-                ? "Programmes Certifiants 100% en Ligne"
+                ? "CERTIFICATS ETHSUN"
                 : locale === "es"
-                  ? "Programas Certificados 100% en Línea"
-                  : "100% Online Certification Programs"}
+                  ? "CERTIFICADOS ETHSUN"
+                  : "ETHSUN CERTIFICATES"}
             </h1>
             <p className="text-lg text-gray-200 leading-relaxed">
               {locale === "fr"
@@ -217,6 +236,20 @@ export default function CertificationsPage() {
                   ? "Explore nuestros ámbitos de formación que cubren las necesidades esenciales de las organizaciones modernas"
                   : "Explore our training domains covering the essential needs of modern organizations"}
             </p>
+
+          {/* Search Bar */}
+          <div className="flex justify-center mb-12">
+            <div className="relative w-full max-w-md">
+              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-[#4A4A4A]" />
+              <Input
+                type="text"
+                placeholder={locale === "fr" ? "Rechercher une certification..." : locale === "es" ? "Buscar una certificación..." : "Search a certification..."}
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-12 py-3 text-base border-[#C9A44A] focus:border-[#C9A44A] focus:ring-[#C9A44A]"
+              />
+            </div>
+          </div>
           </div>
 
           {loading ? (
@@ -234,7 +267,7 @@ export default function CertificationsPage() {
           ) : (
             <Tabs value={selectedCategory} onValueChange={setSelectedCategory} className="w-full">
               <TabsList className="flex flex-wrap justify-center gap-2 h-auto p-2 bg-[#F5F6F7]">
-                {categories.map((category) => (
+                {getFilteredCategories().map((category) => (
                   <TabsTrigger
                     key={category.slug}
                     value={category.slug}
@@ -245,7 +278,7 @@ export default function CertificationsPage() {
                 ))}
               </TabsList>
 
-              {categories.map((category) => (
+              {getFilteredCategories().map((category) => (
                 <TabsContent key={category.slug} value={category.slug} className="mt-8">
                   {category.certifications.length === 0 ? (
                     <div className="text-center py-10">
@@ -258,9 +291,17 @@ export default function CertificationsPage() {
                   ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                       {category.certifications.map((cert) => (
-                        <Card key={cert.id} className="hover:shadow-xl transition-shadow border-none">
-                          <div className="h-40 bg-gradient-to-br from-[#153D63] to-[#0A2A43] flex items-center justify-center">
-                            <BookOpen className="h-16 w-16 text-[#C9A44A]" />
+                        <Card key={cert.id} className="hover:shadow-xl transition-shadow border-none overflow-hidden">
+                          <div className="h-40 bg-gradient-to-br from-[#153D63] to-[#0A2A43] flex items-center justify-center relative overflow-hidden">
+                            {cert.imageUrl ? (
+                              <img
+                                src={cert.imageUrl}
+                                alt={getCertTitle(cert)}
+                                className="w-full h-full object-cover"
+                              />
+                            ) : (
+                              <BookOpen className="h-16 w-16 text-[#C9A44A]" />
+                            )}
                           </div>
                           <CardContent className="p-6">
                             <Badge className="mb-3 bg-[#C9A44A] text-[#0A2A43]">{cert.level}</Badge>

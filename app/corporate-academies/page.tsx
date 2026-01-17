@@ -1,12 +1,14 @@
 "use client"
 
-import { useState } from "react"
+import { useContext, useState } from "react"
 import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Building2, Search, BookOpen, Laptop, LineChart, Award, CheckCircle, ArrowRight } from "lucide-react"
 import type { Locale } from "@/lib/i18n"
+import { getTranslation } from "@/lib/i18n"
+import { LanguageContext } from "@/components/language-provider"
 import Link from "next/link"
 
 const steps = [
@@ -102,7 +104,9 @@ const benefits = [
 ]
 
 export default function CorporateAcademiesPage() {
-  const [locale] = useState<Locale>("fr")
+  const context = useContext(LanguageContext)
+  const locale = (context?.locale as Locale) || "fr"
+  const t = getTranslation(locale)
 
   return (
     <div className="min-h-screen flex flex-col">

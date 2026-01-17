@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useContext, useState, useMemo } from "react"
 import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
 import { Button } from "@/components/ui/button"
@@ -9,12 +9,31 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { CheckCircle, Loader2 } from "lucide-react"
+import { CheckCircle, Loader2, Upload, Search } from "lucide-react"
+import type { Locale } from "@/lib/i18n"
+import { LanguageContext } from "@/components/language-provider"
 import { toast } from "sonner"
 
+const PROGRAMS = [
+  "Management & Leadership",
+  "Éthique & Conformité",
+  "Gouvernance Publique",
+  "Ressources Humaines",
+  "Transformation Numérique & IA",
+  "Immobilier & Construction",
+  "Tourisme & Hôtellerie",
+  "Entrepreneuriat"
+]
+
 export default function InscriptionPage() {
+  const context = useContext(LanguageContext)
+  const locale = (context?.locale as Locale) || "fr"
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)
+  const [cvFile, setCvFile] = useState<File | null>(null)
+  const [uploading, setUploading] = useState(false)
+  const [searchTerm, setSearchTerm] = useState("")
+
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -24,17 +43,72 @@ export default function InscriptionPage() {
     program: "",
     profile: "",
     motivation: "",
+    lastDiploma: "",
+    cvUrl: "",
   })
+
+  // Filter programs based on search term
+  const filteredPrograms = useMemo(() => {
+    return PROGRAMS.filter(p => p.toLowerCase().includes(searchTerm.toLowerCase()))
+  }, [searchTerm])
+
+  async function handleFileUpload(file: File) {
+    if (!file) return null
+
+    return new Promise<string | null>((resolve) => {
+      const reader = new FileReader()
+      reader.readAsDataURL(file)
+      reader.onload = async () => {
+        try {
+          const res = await fetch("/api/upload/cv", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ file: reader.result }),
+          })
+
+          if (!res.ok) throw new Error("Upload failed")
+
+          const data = await res.json()
+          resolve(data.url)
+        } catch (error) {
+          console.error("Upload error:", error)
+          toast.error("Erreur lors de l'upload du CV")
+          resolve(null)
+        }
+      }
+      reader.onerror = () => {
+        toast.error("Erreur de lecture du fichier")
+        resolve(null)
+      }
+    })
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setLoading(true)
 
     try {
+      let finalCvUrl = formData.cvUrl
+
+      if (cvFile && !finalCvUrl) {
+        setUploading(true)
+        const uploadedUrl = await handleFileUpload(cvFile)
+        setUploading(false)
+
+        if (!uploadedUrl) {
+          setLoading(false)
+          return // Stop if upload failed
+        }
+        finalCvUrl = uploadedUrl
+      }
+
       const res = await fetch("/api/forms/inscription", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          ...formData,
+          cvUrl: finalCvUrl
+        }),
       })
 
       if (res.ok) {
@@ -48,7 +122,11 @@ export default function InscriptionPage() {
           program: "",
           profile: "",
           motivation: "",
+          lastDiploma: "",
+          cvUrl: "",
         })
+        setCvFile(null)
+        setSearchTerm("")
         toast.success("Inscription envoyée avec succès !")
       } else {
         throw new Error()
@@ -57,6 +135,7 @@ export default function InscriptionPage() {
       toast.error("Erreur lors de l'envoi. Veuillez réessayer.")
     } finally {
       setLoading(false)
+      setUploading(false)
     }
   }
 
@@ -148,19 +227,38 @@ export default function InscriptionPage() {
                     </div>
                   </div>
 
-                  {/* Pays */}
-                  <div>
-                    <Label>Pays de résidence</Label>
-                    <Input
-                      placeholder="France, Maroc, Sénégal…"
-                      value={formData.country}
-                      onChange={(e) => handleChange("country", e.target.value)}
-                    />
+                  {/* Pays & Diplôme */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <Label>Pays de résidence</Label>
+                      <Input
+                        placeholder="France, Maroc, Sénégal…"
+                        value={formData.country}
+                        onChange={(e) => handleChange("country", e.target.value)}
+                      />
+                    </div>
+                    <div>
+                      <Label>Dernier diplôme ou certificat</Label>
+                      <Input
+                        placeholder="Master 2, Licence, etc."
+                        value={formData.lastDiploma}
+                        onChange={(e) => handleChange("lastDiploma", e.target.value)}
+                      />
+                    </div>
                   </div>
 
-                  {/* Programme */}
-                  <div>
+                  {/* Programme avec Recherche */}
+                  <div className="space-y-2">
                     <Label>Programme souhaité *</Label>
+                    <div className="relative mb-2">
+                      <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
+                      <Input
+                        placeholder="Rechercher une formation..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="pl-9"
+                      />
+                    </div>
                     <Select
                       value={formData.program}
                       onValueChange={(value) => handleChange("program", value)}
@@ -169,14 +267,13 @@ export default function InscriptionPage() {
                         <SelectValue placeholder="Choisir un programme" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="Management & Leadership">Management & Leadership</SelectItem>
-                        <SelectItem value="Éthique & Conformité">Éthique & Conformité</SelectItem>
-                        <SelectItem value="Gouvernance Publique">Gouvernance Publique</SelectItem>
-                        <SelectItem value="Ressources Humaines">Ressources Humaines</SelectItem>
-                        <SelectItem value="Transformation Numérique & IA">Transformation Numérique & IA</SelectItem>
-                        <SelectItem value="Immobilier & Construction">Immobilier & Construction</SelectItem>
-                        <SelectItem value="Tourisme & Hôtellerie">Tourisme & Hôtellerie</SelectItem>
-                        <SelectItem value="Entrepreneuriat">Entrepreneuriat</SelectItem>
+                        {filteredPrograms.length > 0 ? (
+                          filteredPrograms.map((prog) => (
+                            <SelectItem key={prog} value={prog}>{prog}</SelectItem>
+                          ))
+                        ) : (
+                          <div className="p-2 text-sm text-gray-500 text-center">Aucun résultat</div>
+                        )}
                       </SelectContent>
                     </Select>
                   </div>
@@ -201,6 +298,21 @@ export default function InscriptionPage() {
                     </Select>
                   </div>
 
+                  {/* CV Upload */}
+                  <div>
+                    <Label>CV (PDF, Word) - Optionnel</Label>
+                    <div className="mt-2 flex items-center gap-4">
+                      <Input
+                        type="file"
+                        accept=".pdf,.doc,.docx"
+                        onChange={(e) => setCvFile(e.target.files?.[0] || null)}
+                        className="cursor-pointer"
+                      />
+                      {uploading && <Loader2 className="h-4 w-4 animate-spin text-[#C9A44A]" />}
+                    </div>
+                    <p className="text-xs text-gray-500 mt-1">Format recommandé: PDF. Max 5Mo.</p>
+                  </div>
+
                   {/* Motivation */}
                   <div>
                     <Label>Message / Motivation</Label>
@@ -215,13 +327,13 @@ export default function InscriptionPage() {
                   {/* Submit */}
                   <Button
                     type="submit"
-                    disabled={loading}
+                    disabled={loading || uploading}
                     className="w-full bg-[#C9A44A] hover:bg-[#b08f3a] text-[#0A2A43] font-semibold text-lg py-6"
                   >
-                    {loading ? (
+                    {loading || uploading ? (
                       <>
                         <Loader2 className="h-5 w-5 mr-2 animate-spin" />
-                        Envoi en cours...
+                        Traitement en cours...
                       </>
                     ) : (
                       "Soumettre mon inscription"

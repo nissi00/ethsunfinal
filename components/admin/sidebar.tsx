@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { signOut } from "next-auth/react"
@@ -17,6 +17,7 @@ import {
     Menu,
     X,
     ChevronDown,
+    Calendar,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
@@ -34,6 +35,7 @@ const navigation = [
             { name: "Contact", href: "/admin/submissions/contact" },
             { name: "Inscriptions", href: "/admin/submissions/inscription" },
             { name: "Franchise", href: "/admin/submissions/franchise" },
+            { name: "Recrutement", href: "/admin/submissions/recruitment" },
         ],
     },
     {
@@ -42,7 +44,18 @@ const navigation = [
         children: [
             { name: "Statistiques", href: "/admin/content/stats" },
             { name: "Certifications", href: "/admin/content/certifications" },
+            { name: "Offres d'emploi", href: "/admin/content/jobs" },
         ],
+    },
+    {
+        name: "Partenaires",
+        href: "/admin/partners",
+        icon: Handshake,
+    },
+    {
+        name: "Événements",
+        href: "/admin/events",
+        icon: Calendar,
     },
     {
         name: "Thème",
@@ -60,6 +73,45 @@ export function AdminSidebar() {
     const pathname = usePathname()
     const [mobileOpen, setMobileOpen] = useState(false)
     const [openMenus, setOpenMenus] = useState<string[]>(["Soumissions", "Contenu"])
+    const [notifications, setNotifications] = useState({
+        contact: 0,
+        inscription: 0,
+        franchise: 0,
+        recruitment: 0,
+        total: 0
+    })
+
+    useEffect(() => {
+        const fetchNotifications = async () => {
+            try {
+                const res = await fetch("/api/admin/stats/notifications")
+                if (res.ok) {
+                    const data = await res.json()
+                    setNotifications(data)
+                }
+            } catch (error) {
+                console.error("Failed to fetch notifications", error)
+            }
+        }
+
+        fetchNotifications()
+        // Poll every minute
+        const interval = setInterval(fetchNotifications, 60000)
+        return () => clearInterval(interval)
+    }, [])
+
+    function getNotificationCount(href?: string) {
+        if (!href) return 0
+        if (href.includes("/contact")) return notifications.contact
+        if (href.includes("/inscription")) return notifications.inscription
+        if (href.includes("/franchise")) return notifications.franchise
+        if (href.includes("/recruitment")) return notifications.recruitment
+        return 0
+    }
+
+    function getTotalSubmissionsCount() {
+        return notifications.total
+    }
 
     function toggleMenu(name: string) {
         setOpenMenus((prev) =>
@@ -71,6 +123,9 @@ export function AdminSidebar() {
         const hasChildren = "children" in item && item.children
         const isOpen = openMenus.includes(item.name)
         const isActive = item.href === pathname
+
+        // Calculate total notifications for parent item "Soumissions"
+        const parentNotificationCount = item.name === "Soumissions" ? notifications.total : 0
 
         if (hasChildren) {
             return (
@@ -85,6 +140,11 @@ export function AdminSidebar() {
                         <div className="flex items-center gap-3">
                             <item.icon className="h-5 w-5" />
                             {item.name}
+                            {parentNotificationCount > 0 && (
+                                <span className="bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full min-w-[18px] text-center">
+                                    {parentNotificationCount}
+                                </span>
+                            )}
                         </div>
                         <ChevronDown
                             className={cn("h-4 w-4 transition-transform", isOpen && "rotate-180")}
@@ -92,21 +152,29 @@ export function AdminSidebar() {
                     </button>
                     {isOpen && (
                         <div className="ml-8 mt-1 space-y-1">
-                            {item.children.map((child) => (
-                                <Link
-                                    key={child.href}
-                                    href={child.href}
-                                    onClick={() => setMobileOpen(false)}
-                                    className={cn(
-                                        "block px-3 py-2 rounded-lg text-sm transition-colors",
-                                        pathname === child.href
-                                            ? "bg-[#C9A44A] text-[#0A2A43] font-semibold"
-                                            : "text-gray-400 hover:bg-[#153D63] hover:text-white"
-                                    )}
-                                >
-                                    {child.name}
-                                </Link>
-                            ))}
+                            {item.children.map((child) => {
+                                const count = getNotificationCount(child.href)
+                                return (
+                                    <Link
+                                        key={child.href}
+                                        href={child.href}
+                                        onClick={() => setMobileOpen(false)}
+                                        className={cn(
+                                            "flex items-center justify-between px-3 py-2 rounded-lg text-sm transition-colors",
+                                            pathname === child.href
+                                                ? "bg-[#C9A44A] text-[#0A2A43] font-semibold"
+                                                : "text-gray-400 hover:bg-[#153D63] hover:text-white"
+                                        )}
+                                    >
+                                        <span>{child.name}</span>
+                                        {count > 0 && (
+                                            <span className="bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full min-w-[18px] text-center">
+                                                {count}
+                                            </span>
+                                        )}
+                                    </Link>
+                                )
+                            })}
                         </div>
                     )}
                 </div>
@@ -124,8 +192,10 @@ export function AdminSidebar() {
                         : "text-gray-300 hover:bg-[#153D63] hover:text-white"
                 )}
             >
-                <item.icon className="h-5 w-5" />
-                {item.name}
+                <div className="flex items-center gap-3 flex-1">
+                    <item.icon className="h-5 w-5" />
+                    {item.name}
+                </div>
             </Link>
         )
     }

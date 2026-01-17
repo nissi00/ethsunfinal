@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
 import prisma from "@/lib/prisma"
+import { sendSubmissionEmails } from "@/lib/email-service"
 
 // POST - Créer une nouvelle candidature franchise
 export async function POST(request: NextRequest) {
@@ -31,6 +32,15 @@ export async function POST(request: NextRequest) {
                 status: "new",
             },
         })
+
+        // Envoyer les emails
+        await sendSubmissionEmails(
+            "Franchise",
+            submission,
+            email,
+            firstName,
+            "Demande de franchise"
+        )
 
         return NextResponse.json(
             { success: true, message: "Candidature envoyée avec succès", id: submission.id },
