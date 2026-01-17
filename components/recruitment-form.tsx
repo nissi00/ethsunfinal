@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useContext } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -14,8 +14,14 @@ import {
 } from "@/components/ui/select"
 import { toast } from "sonner"
 import { Loader2, Upload } from "lucide-react"
+import { LanguageContext } from "@/components/language-provider"
+import { getTranslation, type Locale } from "@/lib/i18n"
 
 export function RecruitmentForm() {
+    const context = useContext(LanguageContext)
+    const locale = (context?.locale as Locale) || "fr"
+    const t = getTranslation(locale)
+
     const [loading, setLoading] = useState(false)
 
     // File states (base64 strings)
@@ -27,7 +33,7 @@ export function RecruitmentForm() {
         const file = e.target.files?.[0]
         if (file) {
             if (file.size > 5 * 1024 * 1024) {
-                toast.error("Le fichier est trop volumineux (max 5MB)")
+                toast.error(t.forms.fileTooLarge)
                 return
             }
             const reader = new FileReader()
@@ -55,7 +61,7 @@ export function RecruitmentForm() {
         }
 
         if (!cvFile) {
-            toast.error("Veuillez télécharger votre CV")
+            toast.error(t.forms.cv + " " + t.forms.required)
             setLoading(false)
             return
         }
@@ -69,14 +75,14 @@ export function RecruitmentForm() {
 
             if (!res.ok) throw new Error("Erreur lors de l'envoi")
 
-            toast.success("Votre candidature a bien été envoyée !")
+            toast.success(t.forms.success)
                 ; (e.target as HTMLFormElement).reset()
             setCvFile(null)
             setCoverLetterFile(null)
             setDiplomaFile(null)
         } catch (error) {
             console.error(error)
-            toast.error("Une erreur est survenue")
+            toast.error(t.forms.error)
         } finally {
             setLoading(false)
         }
@@ -86,45 +92,45 @@ export function RecruitmentForm() {
         <form onSubmit={handleSubmit} className="space-y-6 bg-white p-8 rounded-lg shadow-sm">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
-                    <Label htmlFor="firstName">Prénom</Label>
-                    <Input id="firstName" name="firstName" required placeholder="Votre prénom" />
+                    <Label htmlFor="firstName">{t.forms.firstName}</Label>
+                    <Input id="firstName" name="firstName" required placeholder={t.forms.firstName} />
                 </div>
                 <div className="space-y-2">
-                    <Label htmlFor="lastName">Nom</Label>
-                    <Input id="lastName" name="lastName" required placeholder="Votre nom" />
+                    <Label htmlFor="lastName">{t.forms.lastName}</Label>
+                    <Input id="lastName" name="lastName" required placeholder={t.forms.lastName} />
                 </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
-                    <Label htmlFor="email">Email</Label>
+                    <Label htmlFor="email">{t.forms.email}</Label>
                     <Input id="email" name="email" type="email" required placeholder="votre@email.com" />
                 </div>
                 <div className="space-y-2">
-                    <Label htmlFor="phone">Téléphone</Label>
+                    <Label htmlFor="phone">{t.forms.phone}</Label>
                     <Input id="phone" name="phone" type="tel" required placeholder="+33 6..." />
                 </div>
             </div>
 
             <div className="space-y-2">
-                <Label htmlFor="role">Poste souhaité</Label>
+                <Label htmlFor="role">{t.forms.role}</Label>
                 <Select name="role" required>
                     <SelectTrigger>
-                        <SelectValue placeholder="Sélectionnez un poste" />
+                        <SelectValue placeholder={t.forms.selectRole} />
                     </SelectTrigger>
                     <SelectContent>
-                        <SelectItem value="collaborateur">Collaborateur</SelectItem>
-                        <SelectItem value="formateur">Formateur</SelectItem>
-                        <SelectItem value="concepteur">Concepteur Pédagogique</SelectItem>
-                        <SelectItem value="digital_manager">Digital Learning Manager</SelectItem>
-                        <SelectItem value="freelance">Partenaire Freelance</SelectItem>
+                        <SelectItem value="collaborateur">{locale === 'fr' ? 'Collaborateur' : locale === 'es' ? 'Colaborador' : 'Collaborator'}</SelectItem>
+                        <SelectItem value="formateur">{locale === 'fr' ? 'Formateur' : locale === 'es' ? 'Formador' : 'Trainer'}</SelectItem>
+                        <SelectItem value="concepteur">{locale === 'fr' ? 'Concepteur Pédagogique' : locale === 'es' ? 'Diseñador instruccional' : 'Instructional Designer'}</SelectItem>
+                        <SelectItem value="digital_manager">{locale === 'fr' ? 'Digital Learning Manager' : locale === 'es' ? 'Gerente de Aprendizaje Digital' : 'Digital Learning Manager'}</SelectItem>
+                        <SelectItem value="freelance">{locale === 'fr' ? 'Partenaire Freelance' : locale === 'es' ? 'Socio Independiente' : 'Freelance Partner'}</SelectItem>
                     </SelectContent>
                 </Select>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div className="space-y-2">
-                    <Label htmlFor="cv">CV (PDF)</Label>
+                    <Label htmlFor="cv">{t.forms.cv}</Label>
                     <div className="flex items-center gap-2">
                         <Input
                             id="cv"
@@ -134,11 +140,11 @@ export function RecruitmentForm() {
                             className="cursor-pointer"
                         />
                     </div>
-                    {cvFile && <span className="text-xs text-green-600">Fichier chargé</span>}
+                    {cvFile && <span className="text-xs text-green-600">{locale === 'fr' ? 'Fichier chargé' : 'File loaded'}</span>}
                 </div>
 
                 <div className="space-y-2">
-                    <Label htmlFor="coverLetter">Lettre de Motivation</Label>
+                    <Label htmlFor="coverLetter">{t.forms.coverLetter}</Label>
                     <div className="flex items-center gap-2">
                         <Input
                             id="coverLetter"
@@ -148,11 +154,11 @@ export function RecruitmentForm() {
                             className="cursor-pointer"
                         />
                     </div>
-                    {coverLetterFile && <span className="text-xs text-green-600">Fichier chargé</span>}
+                    {coverLetterFile && <span className="text-xs text-green-600">{locale === 'fr' ? 'Fichier chargé' : 'File loaded'}</span>}
                 </div>
 
                 <div className="space-y-2">
-                    <Label htmlFor="diploma">Diplôme</Label>
+                    <Label htmlFor="diploma">{t.forms.diploma}</Label>
                     <div className="flex items-center gap-2">
                         <Input
                             id="diploma"
@@ -162,7 +168,7 @@ export function RecruitmentForm() {
                             className="cursor-pointer"
                         />
                     </div>
-                    {diplomaFile && <span className="text-xs text-green-600">Fichier chargé</span>}
+                    {diplomaFile && <span className="text-xs text-green-600">{locale === 'fr' ? 'Fichier chargé' : 'File loaded'}</span>}
                 </div>
             </div>
 
@@ -174,10 +180,10 @@ export function RecruitmentForm() {
                 {loading ? (
                     <>
                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Envoi en cours...
+                        {t.cta.sending}
                     </>
                 ) : (
-                    "Envoyer ma candidature"
+                    t.cta.apply
                 )}
             </Button>
         </form>

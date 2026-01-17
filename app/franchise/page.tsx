@@ -298,21 +298,13 @@ export default function FranchisePage() {
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto text-center">
             <h1 className="text-4xl lg:text-5xl font-serif font-bold mb-6">
-              {locale === "fr"
-                ? "Créer Votre Centre de Formation avec ETHSUN"
-                : locale === "es"
-                  ? "Crear su Centro de Formación con ETHSUN"
-                  : "Create Your Training Center with ETHSUN"}
+              {t.franchise.title}
             </h1>
             <p className="text-lg text-gray-200 leading-relaxed mb-8">
-              {locale === "fr"
-                ? "Le réseau de franchises ETHSUN permet aux entrepreneurs, institutions ou organisations d'ouvrir un centre de formation certifiant sous la marque ETHSUN. Le franchiseur fournit les programmes, la certification, le LMS, le branding, l'audit qualité et le support pédagogique."
-                : locale === "es"
-                  ? "La red de franquicias ETHSUN permite a emprendedores, instituciones u organizaciones abrir un centro de formación certificado bajo la marca ETHSUN. El franquiciador proporciona programas, certificación, LMS, marca, auditoría de calidad y soporte pedagógico."
-                  : "The ETHSUN franchise network allows entrepreneurs, institutions or organizations to open a certified training center under the ETHSUN brand. The franchisor provides programs, certification, LMS, branding, quality audit and pedagogical support."}
+              {t.franchise.subtitle}
             </p>
             <Button size="lg" className="bg-theme-accent hover:opacity-90 text-theme-primary font-semibold">
-              {locale === "fr" ? "Rejoindre le Réseau" : locale === "es" ? "Unirse a la Red" : "Join the Network"}
+              {t.franchise.join}
             </Button>
           </div>
         </div>
@@ -323,11 +315,7 @@ export default function FranchisePage() {
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <h2 className="text-3xl lg:text-4xl font-serif font-bold text-theme-primary mb-4">
-              {locale === "fr"
-                ? "Ce que Nous Offrons aux Franchisés"
-                : locale === "es"
-                  ? "Lo que Ofrecemos a los Franquiciados"
-                  : "What We Offer Franchisees"}
+              {t.franchise.offerTitle}
             </h2>
             <div className="w-24 h-1 bg-[#C9A44A] mx-auto" />
           </div>
@@ -356,11 +344,7 @@ export default function FranchisePage() {
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <h2 className="text-3xl lg:text-4xl font-serif font-bold text-[#0A2A43] mb-4">
-              {locale === "fr"
-                ? "Rôle et Responsabilités du Franchisé"
-                : locale === "es"
-                  ? "Rol y Responsabilidades del Franquiciado"
-                  : "Franchisee Role and Responsibilities"}
+              {t.franchise.responsibilityTitle}
             </h2>
             <div className="w-24 h-1 bg-[#C9A44A] mx-auto" />
           </div>
@@ -387,11 +371,7 @@ export default function FranchisePage() {
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <h2 className="text-3xl lg:text-4xl font-serif font-bold text-[#0A2A43] mb-4">
-              {locale === "fr"
-                ? "Pourquoi Rejoindre ETHSUN ?"
-                : locale === "es"
-                  ? "¿Por Qué Unirse a ETHSUN?"
-                  : "Why Join ETHSUN?"}
+              {t.franchise.whyJoin}
             </h2>
             <div className="w-24 h-1 bg-[#C9A44A] mx-auto" />
           </div>
@@ -416,11 +396,7 @@ export default function FranchisePage() {
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <h2 className="text-3xl lg:text-4xl font-serif font-bold text-[#0A2A43] mb-4">
-              {locale === "fr"
-                ? "Processus d'Adhésion en 6 Étapes"
-                : locale === "es"
-                  ? "Proceso de Adhesión en 6 Etapas"
-                  : "6-Step Membership Process"}
+              {t.franchise.processTitle}
             </h2>
             <div className="w-24 h-1 bg-[#C9A44A] mx-auto" />
           </div>
@@ -448,19 +424,11 @@ export default function FranchisePage() {
           <div className="max-w-3xl mx-auto">
             <div className="text-center mb-12">
               <h2 className="text-3xl lg:text-4xl font-serif font-bold text-[#0A2A43] mb-4">
-                {locale === "fr"
-                  ? "Rejoindre le Réseau International ETHSUN"
-                  : locale === "es"
-                    ? "Unirse a la Red Internacional ETHSUN"
-                    : "Join the ETHSUN International Network"}
+                {t.franchise.formTitle}
               </h2>
               <div className="w-24 h-1 bg-[#C9A44A] mx-auto mb-6" />
               <p className="text-[#4A4A4A]">
-                {locale === "fr"
-                  ? "Complétez ce formulaire pour exprimer votre intérêt. Notre équipe vous contactera sous 48h."
-                  : locale === "es"
-                    ? "Complete este formulario para expresar su interés. Nuestro equipo le contactará en 48h."
-                    : "Complete this form to express your interest. Our team will contact you within 48 hours."}
+                {t.franchise.formSubtitle}
               </p>
             </div>
             <Card className="border-none shadow-xl">
@@ -469,28 +437,16 @@ export default function FranchisePage() {
                   <div className="text-center py-12">
                     <CheckCircle className="h-16 w-16 text-green-500 mx-auto mb-4" />
                     <h3 className="text-2xl font-serif font-bold text-[#0A2A43] mb-2">
-                      {locale === "fr"
-                        ? "Candidature envoyée !"
-                        : locale === "es"
-                          ? "¡Candidatura enviada!"
-                          : "Application submitted!"}
+                      {t.franchise.success}
                     </h3>
                     <p className="text-[#4A4A4A] mb-6">
-                      {locale === "fr"
-                        ? "Notre équipe vous contactera sous 48h."
-                        : locale === "es"
-                          ? "Nuestro equipo le contactará en 48h."
-                          : "Our team will contact you within 48 hours."}
+                      {t.franchise.successDesc}
                     </p>
                     <Button
                       onClick={() => setSuccess(false)}
                       variant="outline"
                     >
-                      {locale === "fr"
-                        ? "Nouvelle candidature"
-                        : locale === "es"
-                          ? "Nueva candidatura"
-                          : "New application"}
+                      {t.inscription.newRegistration}
                     </Button>
                   </div>
                 ) : (

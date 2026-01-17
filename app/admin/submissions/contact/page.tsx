@@ -180,33 +180,19 @@ export default function ContactSubmissionsPage() {
             {/* Filters */}
             <Card className="border-none">
                 <CardContent className="p-4">
-                    <div className="flex flex-col sm:flex-row gap-4">
-                        <form onSubmit={handleSearch} className="flex-1 flex gap-2">
-                            <div className="relative flex-1">
-                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-                                <Input
-                                    placeholder="Rechercher par nom, email..."
-                                    value={search}
-                                    onChange={(e) => setSearch(e.target.value)}
-                                    className="pl-10"
-                                />
-                            </div>
-                            <Button type="submit" variant="secondary">
-                                Rechercher
-                            </Button>
-                        </form>
-                        <Select value={statusFilter} onValueChange={setStatusFilter}>
-                            <SelectTrigger className="w-[180px]">
-                                <Filter className="h-4 w-4 mr-2" />
-                                <SelectValue placeholder="Filtrer par statut" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="all">Tous les statuts</SelectItem>
-                                <SelectItem value="new">Nouveaux</SelectItem>
-                                <SelectItem value="in_progress">En cours</SelectItem>
-                                <SelectItem value="completed">Traités</SelectItem>
-                            </SelectContent>
-                        </Select>
+                    <div className="flex flex-col md:flex-row gap-4">
+                        <div className="relative flex-1">
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                            <Input
+                                placeholder="Rechercher par nom, email..."
+                                value={search}
+                                onChange={(e) => setSearch(e.target.value)}
+                                className="pl-10"
+                            />
+                        </div>
+                        <Button type="submit" variant="secondary" onClick={handleSearch}>
+                            Rechercher
+                        </Button>
                     </div>
                 </CardContent>
             </Card>
@@ -232,9 +218,6 @@ export default function ContactSubmissionsPage() {
                                             Sujet
                                         </th>
                                         <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                                            Statut
-                                        </th>
-                                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                                             Date
                                         </th>
                                         <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">
@@ -244,13 +227,17 @@ export default function ContactSubmissionsPage() {
                                 </thead>
                                 <tbody className="divide-y">
                                     {submissions.map((submission) => {
-                                        const status = statusConfig[submission.status as keyof typeof statusConfig]
                                         return (
                                             <tr key={submission.id} className="hover:bg-gray-50">
                                                 <td className="px-4 py-4">
                                                     <div className="flex flex-col">
                                                         <span className="font-medium text-[#0A2A43]">
                                                             {submission.firstName} {submission.lastName}
+                                                            {submission.status === "new" && (
+                                                                <Badge className="ml-2 bg-blue-100 text-blue-700 hover:bg-blue-100 border-none">
+                                                                    Nouveau
+                                                                </Badge>
+                                                            )}
                                                         </span>
                                                         <span className="text-sm text-gray-500">
                                                             {submission.email}
@@ -261,11 +248,6 @@ export default function ContactSubmissionsPage() {
                                                     <span className="text-sm text-[#4A4A4A]">
                                                         {submission.subject}
                                                     </span>
-                                                </td>
-                                                <td className="px-4 py-4">
-                                                    <Badge className={status?.color || "bg-gray-100"}>
-                                                        {status?.label || submission.status}
-                                                    </Badge>
                                                 </td>
                                                 <td className="px-4 py-4 text-sm text-gray-500">
                                                     {formatDate(submission.createdAt)}
@@ -280,20 +262,13 @@ export default function ContactSubmissionsPage() {
                                                         <DropdownMenuContent align="end">
                                                             <DropdownMenuItem onClick={() => {
                                                                 setSelectedSubmission(submission)
+                                                                // Automatically mark as seen when viewed if it was new
                                                                 if (submission.status === "new") {
-                                                                    updateStatus(submission.id, "in_progress")
+                                                                    updateStatus(submission.id, "completed")
                                                                 }
                                                             }}>
                                                                 <Eye className="h-4 w-4 mr-2" />
                                                                 Voir détails
-                                                            </DropdownMenuItem>
-                                                            <DropdownMenuItem onClick={() => updateStatus(submission.id, "in_progress")}>
-                                                                <Clock className="h-4 w-4 mr-2" />
-                                                                Marquer en cours
-                                                            </DropdownMenuItem>
-                                                            <DropdownMenuItem onClick={() => updateStatus(submission.id, "completed")}>
-                                                                <CheckCircle className="h-4 w-4 mr-2" />
-                                                                Marquer traité
                                                             </DropdownMenuItem>
                                                             <DropdownMenuItem
                                                                 onClick={() => deleteSubmission(submission.id)}
@@ -362,22 +337,12 @@ export default function ContactSubmissionsPage() {
                             </div>
                             <div className="flex gap-2 pt-4">
                                 <Button
-                                    onClick={() => updateStatus(selectedSubmission.id, "in_progress")}
-                                    variant="outline"
+                                    onClick={() => deleteSubmission(selectedSubmission.id)}
+                                    variant="destructive"
                                     className="flex-1"
                                 >
-                                    <Clock className="h-4 w-4 mr-2" />
-                                    En cours
-                                </Button>
-                                <Button
-                                    onClick={() => {
-                                        updateStatus(selectedSubmission.id, "completed")
-                                        setSelectedSubmission(null)
-                                    }}
-                                    className="flex-1 bg-[#C9A44A] hover:bg-[#b08f3a] text-[#0A2A43]"
-                                >
-                                    <CheckCircle className="h-4 w-4 mr-2" />
-                                    Marquer traité
+                                    <Trash2 className="h-4 w-4 mr-2" />
+                                    Supprimer définitivement
                                 </Button>
                             </div>
                         </div>

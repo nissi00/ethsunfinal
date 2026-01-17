@@ -1,15 +1,18 @@
-# Admin Refinements
+# Task: Internationalize Admin Panel and Site Enhancements
 
-- [ ] **Inscription Details**
-    - [ ] Review `app/admin/submissions/inscription/page.tsx` DB schema vs UI fields.
-    - [ ] ensure ALL fields (phone, country, profile, motivation, cvUrl, lastDiploma, etc.) are displayed in the modal.
-    - [ ] verify CV download button prominence.
-
-- [ ] **Notification Clearance (Mark as Read)**
-    - [ ] **Inscription**: Update `app/admin/submissions/inscription/page.tsx` to set status to `in_progress` (or `read`) when "Voir détails" is clicked.
-    - [ ] **Contact**: Update `app/admin/submissions/contact/page.tsx` similarly.
-    - [ ] **Franchise**: Update `app/admin/submissions/franchise/page.tsx` similarly.
-    - [ ] **Recruitment**: Update `app/admin/submissions/recruitment/page.tsx` similarly.
-
-- [ ] **Verification**
-    - [ ] Simulate viewing a "new" item and verify badge count decreases.
+- [x] Internationalize Recruitment page and form
+- [x] Internationalize Inscription page and form
+- [x] Centralize translations for Inscription and Franchise in `lib/i18n.ts`
+- [x] Enhance Admin Recruitment:
+    - [x] Add Accept/Reject/Delete actions
+    - [x] Implement "Mark as seen" logic to clear notifications
+- [x] Enhance Admin Inscription:
+    - [x] Display all form information
+    - [x] Enable CV downloading
+- [x] Enhance Admin Contact:
+    - [x] Restrict actions to deletion only
+    - [x] Automatically mark as seen when viewed
+- [x] Fix Certification image display
+    - [x] Update API to include `imageUrl`
+    - [x] Regenerate Prisma client
+- [x] Verify Admin notifications (counts only `new` items)

@@ -88,9 +88,13 @@ export function SubmissionList({ initialSubmissions }: { initialSubmissions: Sub
                                     Nouveau
                                 </Badge>
                             )}
+                            {submission.status === 'accepted' && <Badge className="bg-green-100 text-green-800 border-none">Accepté</Badge>}
+                            {submission.status === 'rejected' && <Badge className="bg-red-100 text-red-800 border-none">Refusé</Badge>}
+                            {submission.status === 'contacted' && <Badge className="bg-yellow-100 text-yellow-800 border-none">En cours</Badge>}
                         </div>
                         <div className="flex items-center gap-2">
                             <Badge variant="outline">{submission.role}</Badge>
+
                             {submission.status === 'new' && (
                                 <Button
                                     variant="outline"
@@ -101,10 +105,30 @@ export function SubmissionList({ initialSubmissions }: { initialSubmissions: Sub
                                     Marquer comme vu
                                 </Button>
                             )}
+
+                            <div className="flex gap-1">
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    className="text-green-600 border-green-200 hover:bg-green-50 h-8"
+                                    onClick={() => updateStatus(submission.id, 'accepted')}
+                                >
+                                    Accepter
+                                </Button>
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    className="text-red-600 border-red-200 hover:bg-red-50 h-8"
+                                    onClick={() => updateStatus(submission.id, 'rejected')}
+                                >
+                                    Refuser
+                                </Button>
+                            </div>
+
                             <Button
                                 variant="ghost"
                                 size="sm"
-                                className="text-red-500 hover:text-red-700 hover:bg-red-50"
+                                className="text-gray-400 hover:text-red-600"
                                 onClick={() => deleteSubmission(submission.id)}
                             >
                                 <Trash2 className="h-4 w-4" />

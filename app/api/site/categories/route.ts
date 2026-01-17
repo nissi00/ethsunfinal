@@ -27,8 +27,9 @@ export async function GET() {
             duration: true,
             level: true,
             price: true,
+            imageUrl: true,
             isActive: true,
-          },
+          } as any,
           orderBy: {
             sortOrder: "asc",
           },

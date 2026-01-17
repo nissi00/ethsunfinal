@@ -10,7 +10,7 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { CheckCircle, Loader2, Upload, Search } from "lucide-react"
-import type { Locale } from "@/lib/i18n"
+import { getTranslation, type Locale } from "@/lib/i18n"
 import { LanguageContext } from "@/components/language-provider"
 import { toast } from "sonner"
 
@@ -28,6 +28,7 @@ const PROGRAMS = [
 export default function InscriptionPage() {
   const context = useContext(LanguageContext)
   const locale = (context?.locale as Locale) || "fr"
+  const t = getTranslation(locale)
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)
   const [cvFile, setCvFile] = useState<File | null>(null)
@@ -151,11 +152,10 @@ export default function InscriptionPage() {
       <section className="bg-gradient-theme py-20 text-white">
         <div className="container mx-auto px-4 text-center max-w-3xl">
           <h1 className="text-4xl font-serif font-bold mb-4">
-            Formulaire d'Inscription
+            {t.inscription.title}
           </h1>
           <p className="text-gray-200">
-            Rejoignez nos programmes certifiants internationaux et développez
-            des compétences stratégiques reconnues.
+            {t.inscription.subtitle}
           </p>
         </div>
       </section>
@@ -169,16 +169,16 @@ export default function InscriptionPage() {
                 <div className="text-center py-12">
                   <CheckCircle className="h-16 w-16 text-green-500 mx-auto mb-4" />
                   <h3 className="text-2xl font-serif font-bold text-theme-primary mb-2">
-                    Inscription envoyée !
+                    {t.inscription.success}
                   </h3>
                   <p className="text-theme-text mb-6">
-                    Nous vous contacterons dans les plus brefs délais.
+                    {t.inscription.successDesc}
                   </p>
                   <Button
                     onClick={() => setSuccess(false)}
                     variant="outline"
                   >
-                    Nouvelle inscription
+                    {t.inscription.newRegistration}
                   </Button>
                 </div>
               ) : (
@@ -186,19 +186,19 @@ export default function InscriptionPage() {
                   {/* Identité */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                      <Label>Prénom *</Label>
+                      <Label>{t.forms.firstName} *</Label>
                       <Input
                         required
-                        placeholder="Votre prénom"
+                        placeholder={t.forms.firstName}
                         value={formData.firstName}
                         onChange={(e) => handleChange("firstName", e.target.value)}
                       />
                     </div>
                     <div>
-                      <Label>Nom *</Label>
+                      <Label>{t.forms.lastName} *</Label>
                       <Input
                         required
-                        placeholder="Votre nom"
+                        placeholder={t.forms.lastName}
                         value={formData.lastName}
                         onChange={(e) => handleChange("lastName", e.target.value)}
                       />
@@ -208,7 +208,7 @@ export default function InscriptionPage() {
                   {/* Contact */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                      <Label>Email *</Label>
+                      <Label>{t.forms.email} *</Label>
                       <Input
                         type="email"
                         required
@@ -218,7 +218,7 @@ export default function InscriptionPage() {
                       />
                     </div>
                     <div>
-                      <Label>Téléphone</Label>
+                      <Label>{t.forms.phone}</Label>
                       <Input
                         placeholder="+33 6 00 00 00 00"
                         value={formData.phone}
@@ -230,17 +230,17 @@ export default function InscriptionPage() {
                   {/* Pays & Diplôme */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                      <Label>Pays de résidence</Label>
+                      <Label>{t.forms.country}</Label>
                       <Input
-                        placeholder="France, Maroc, Sénégal…"
+                        placeholder={locale === 'fr' ? 'France, Maroc, Sénégal…' : 'Country...'}
                         value={formData.country}
                         onChange={(e) => handleChange("country", e.target.value)}
                       />
                     </div>
                     <div>
-                      <Label>Dernier diplôme ou certificat</Label>
+                      <Label>{t.forms.lastDiploma}</Label>
                       <Input
-                        placeholder="Master 2, Licence, etc."
+                        placeholder={locale === 'fr' ? 'Master 2, Licence, etc.' : 'Master, Bachelor, etc.'}
                         value={formData.lastDiploma}
                         onChange={(e) => handleChange("lastDiploma", e.target.value)}
                       />
@@ -249,11 +249,11 @@ export default function InscriptionPage() {
 
                   {/* Programme avec Recherche */}
                   <div className="space-y-2">
-                    <Label>Programme souhaité *</Label>
+                    <Label>{t.forms.program} *</Label>
                     <div className="relative mb-2">
                       <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
                       <Input
-                        placeholder="Rechercher une formation..."
+                        placeholder={locale === 'fr' ? "Rechercher une formation..." : "Search a program..."}
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                         className="pl-9"
@@ -264,7 +264,7 @@ export default function InscriptionPage() {
                       onValueChange={(value) => handleChange("program", value)}
                     >
                       <SelectTrigger>
-                        <SelectValue placeholder="Choisir un programme" />
+                        <SelectValue placeholder={t.forms.selectProgram} />
                       </SelectTrigger>
                       <SelectContent>
                         {filteredPrograms.length > 0 ? (
@@ -272,7 +272,7 @@ export default function InscriptionPage() {
                             <SelectItem key={prog} value={prog}>{prog}</SelectItem>
                           ))
                         ) : (
-                          <div className="p-2 text-sm text-gray-500 text-center">Aucun résultat</div>
+                          <div className="p-2 text-sm text-gray-500 text-center">{locale === 'fr' ? 'Aucun résultat' : 'No results'}</div>
                         )}
                       </SelectContent>
                     </Select>
@@ -280,27 +280,27 @@ export default function InscriptionPage() {
 
                   {/* Profil */}
                   <div>
-                    <Label>Profil professionnel</Label>
+                    <Label>{t.forms.profile}</Label>
                     <Select
                       value={formData.profile}
                       onValueChange={(value) => handleChange("profile", value)}
                     >
                       <SelectTrigger>
-                        <SelectValue placeholder="Votre profil" />
+                        <SelectValue placeholder={t.forms.selectProfile} />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="Étudiant">Étudiant</SelectItem>
-                        <SelectItem value="Salarié">Salarié</SelectItem>
-                        <SelectItem value="Manager / Cadre">Manager / Cadre</SelectItem>
-                        <SelectItem value="Entrepreneur">Entrepreneur</SelectItem>
-                        <SelectItem value="Fonction publique">Fonction publique</SelectItem>
+                        <SelectItem value="Étudiant">{locale === 'fr' ? 'Étudiant' : 'Student'}</SelectItem>
+                        <SelectItem value="Salarié">{locale === 'fr' ? 'Salarié' : 'Employee'}</SelectItem>
+                        <SelectItem value="Manager / Cadre">{locale === 'fr' ? 'Manager / Cadre' : 'Manager'}</SelectItem>
+                        <SelectItem value="Entrepreneur">{locale === 'fr' ? 'Entrepreneur' : 'Entrepreneur'}</SelectItem>
+                        <SelectItem value="Fonction publique">{locale === 'fr' ? 'Fonction publique' : 'Public sector'}</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
 
                   {/* CV Upload */}
                   <div>
-                    <Label>CV (PDF, Word) - Optionnel</Label>
+                    <Label>{t.forms.cv} - {locale === 'fr' ? 'Optionnel' : 'Optional'}</Label>
                     <div className="mt-2 flex items-center gap-4">
                       <Input
                         type="file"
@@ -310,15 +310,15 @@ export default function InscriptionPage() {
                       />
                       {uploading && <Loader2 className="h-4 w-4 animate-spin text-[#C9A44A]" />}
                     </div>
-                    <p className="text-xs text-gray-500 mt-1">Format recommandé: PDF. Max 5Mo.</p>
+                    <p className="text-xs text-gray-500 mt-1">{locale === 'fr' ? 'Format recommandé: PDF. Max 5Mo.' : 'Recommended format: PDF. Max 5MB.'}</p>
                   </div>
 
                   {/* Motivation */}
                   <div>
-                    <Label>Message / Motivation</Label>
+                    <Label>{t.forms.motivation}</Label>
                     <Textarea
                       rows={4}
-                      placeholder="Expliquez brièvement votre motivation…"
+                      placeholder={locale === 'fr' ? "Expliquez brièvement votre motivation…" : "Briefly explain your motivation..."}
                       value={formData.motivation}
                       onChange={(e) => handleChange("motivation", e.target.value)}
                     />
@@ -333,10 +333,10 @@ export default function InscriptionPage() {
                     {loading || uploading ? (
                       <>
                         <Loader2 className="h-5 w-5 mr-2 animate-spin" />
-                        Traitement en cours...
+                        {t.cta.sending}
                       </>
                     ) : (
-                      "Soumettre mon inscription"
+                      t.cta.submit
                     )}
                   </Button>
                 </form>
