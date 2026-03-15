@@ -83,7 +83,7 @@ export function Navbar() {
             <Link href="/" className="flex items-center gap-3">
 
               <Image
-                src="/ethsun logo.png"
+                src="/ethsun_logo.jpeg"
                 alt="ETHSUN Logo"
                 width={100}
                 height={80}
