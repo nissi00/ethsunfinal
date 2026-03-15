@@ -1,18 +1,29 @@
 import { NextRequest, NextResponse } from "next/server"
-import prisma from "@/lib/prisma"
+import { prisma } from "@/lib/prisma"
 import { sendSubmissionEmails } from "@/lib/email-service"
 
 // POST - Créer une nouvelle inscription
 export async function POST(request: NextRequest) {
     try {
         const body = await request.json()
+        console.log("Incoming inscription body:", body)
 
         const { firstName, lastName, email, phone, country, program, profile, motivation } = body
 
         // Validation basique
-        if (!firstName || !lastName || !email || !program) {
+        const missingFields = []
+        if (!firstName) missingFields.push("firstName")
+        if (!lastName) missingFields.push("lastName")
+        if (!email) missingFields.push("email")
+        if (!program) missingFields.push("program")
+
+        if (missingFields.length > 0) {
             return NextResponse.json(
-                { error: "Champs requis manquants" },
+                { 
+                    error: "Champs requis manquants", 
+                    fields: missingFields,
+                    message: `Les champs suivants sont obligatoires : ${missingFields.join(", ")}`
+                },
                 { status: 400 }
             )
         }
@@ -47,10 +58,10 @@ export async function POST(request: NextRequest) {
             { success: true, message: "Inscription envoyée avec succès", id: submission.id },
             { status: 201 }
         )
-    } catch (error) {
+    } catch (error: any) {
         console.error("Error creating inscription submission:", error)
         return NextResponse.json(
-            { error: "Erreur lors de l'envoi de l'inscription" },
+            { error: "Erreur lors de l'envoi de l'inscription", detail: error.message },
             { status: 500 }
         )
     }
@@ -71,10 +82,10 @@ export async function GET(request: NextRequest) {
 
         if (search) {
             where.OR = [
-                { firstName: { contains: search } },
-                { lastName: { contains: search } },
-                { email: { contains: search } },
-                { program: { contains: search } },
+                { firstName: { contains: search, mode: "insensitive" } },
+                { lastName: { contains: search, mode: "insensitive" } },
+                { email: { contains: search, mode: "insensitive" } },
+                { program: { contains: search, mode: "insensitive" } },
             ]
         }
 
@@ -84,10 +95,10 @@ export async function GET(request: NextRequest) {
         })
 
         return NextResponse.json(submissions)
-    } catch (error) {
+    } catch (error: any) {
         console.error("Error fetching inscription submissions:", error)
         return NextResponse.json(
-            { error: "Erreur lors de la récupération des inscriptions" },
+            { error: "Erreur lors de la récupération des inscriptions", detail: error.message },
             { status: 500 }
         )
     }

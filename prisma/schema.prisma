@@ -3,8 +3,9 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 model User {
@@ -27,6 +28,7 @@ model ContactSubmission {
   subject      String
   message      String
   status       String   @default("new")
+  statut_final String?
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 }
@@ -42,6 +44,7 @@ model InscriptionSubmission {
   profile     String?
   motivation  String?
   status      String   @default("new")
+  statut_final String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   cvUrl       String?
@@ -60,6 +63,7 @@ model FranchiseSubmission {
   motivation   String?
   project      String?
   status       String   @default("new")
+  statut_final String?
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 }
@@ -75,8 +79,27 @@ model RecruitmentSubmission {
   coverLetterUrl String?
   diplomaUrl     String?
   status         String   @default("new")
+  statut_final   String?
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
+}
+
+model EventSubmission {
+  id          String   @id @default(cuid())
+  firstName   String
+  lastName    String
+  email       String
+  phone       String?
+  country     String?
+  event       String
+  profile     String?
+  motivation  String?
+  status      String   @default("new")
+  statut_final String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  cvUrl       String?
+  lastDiploma String?
 }
 
 model SiteSettings {
@@ -235,3 +258,25 @@ model JobOffer {
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
 }
+
+model Resource {
+  id            String   @id @default(cuid())
+  titleFr       String
+  titleEn       String?
+  titleEs       String?
+  descriptionFr String?
+  descriptionEn String?
+  descriptionEs String?
+  fileUrl       String
+  type          String   @default("other") // "catalogue", "whitepaper", "report", "legal"
+  slug          String?  @unique // "privacy-policy", "terms-of-sale" for legal docs
+  category      String?  // "Innovation", "Éthique", etc.
+  author      String?
+  date        String?
+  pages       String?
+  isActive    Boolean  @default(true)
+  sortOrder     Int      @default(0)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+

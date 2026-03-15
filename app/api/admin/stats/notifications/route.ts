@@ -3,11 +3,12 @@ import { prisma } from "@/lib/prisma"
 
 export async function GET() {
     try {
-        const [contact, inscription, franchise, recruitment] = await Promise.all([
-            prisma.contactSubmission.count({ where: { status: "new" } }),
-            prisma.inscriptionSubmission.count({ where: { status: "new" } }),
-            prisma.franchiseSubmission.count({ where: { status: "new" } }),
-            prisma.recruitmentSubmission.count({ where: { status: "new" } }),
+        const [contact, inscription, franchise, recruitment, event] = await Promise.all([
+            prisma.contactSubmission.count({ where: { OR: [{ statut_final: null }, { statut_final: "" }] } }),
+            prisma.inscriptionSubmission.count({ where: { OR: [{ statut_final: null }, { statut_final: "" }] } }),
+            prisma.franchiseSubmission.count({ where: { OR: [{ statut_final: null }, { statut_final: "" }] } }),
+            prisma.recruitmentSubmission.count({ where: { OR: [{ statut_final: null }, { statut_final: "" }] } }),
+            prisma.eventSubmission.count({ where: { OR: [{ statut_final: null }, { statut_final: "" }] } }),
         ])
 
         return NextResponse.json({
@@ -15,9 +16,19 @@ export async function GET() {
             inscription,
             franchise,
             recruitment,
-            total: contact + inscription + franchise + recruitment
+            event,
+            total: contact + inscription + franchise + recruitment + event
         })
     } catch (error) {
-        return new NextResponse("Internal Error", { status: 500 })
+        console.error("Notifications count error:", error)
+        // Retourner des zéros plutôt qu'une erreur 500 pour éviter de casser le sidebar
+        return NextResponse.json({
+            contact: 0,
+            inscription: 0,
+            franchise: 0,
+            recruitment: 0,
+            event: 0,
+            total: 0
+        })
     }
 }

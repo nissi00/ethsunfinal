@@ -89,19 +89,25 @@ export default function CertificationsPage() {
     }
   }
 
-  function getFilteredCategories() {
-    if (!searchQuery.trim()) {
-      return categories
-    }
+  function getFilteredCertifications() {
+    const query = searchQuery.trim().toLowerCase()
     
-    const query = searchQuery.toLowerCase()
-    return categories.map((category) => ({
-      ...category,
-      certifications: category.certifications.filter((cert) =>
-        getCertTitle(cert).toLowerCase().includes(query)
-      ),
-    }))
+    // Flatten all certifications from all categories
+    const allCertifications = categories.flatMap(cat => 
+      cat.certifications.map(cert => ({ ...cert, categoryName: getCategoryName(cat) }))
+    )
+
+    if (!query) {
+      return []
+    }
+
+    return allCertifications.filter(cert => 
+      getCertTitle(cert).toLowerCase().includes(query)
+    )
   }
+
+  const isSearching = searchQuery.trim().length > 0
+  const searchResults = getFilteredCertifications()
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -264,10 +270,74 @@ export default function CertificationsPage() {
                   : "No certifications available at the moment."}
               </p>
             </div>
+          ) : isSearching ? (
+            <div className="space-y-8">
+              <div className="flex items-center justify-between">
+                <h3 className="text-xl font-serif font-semibold text-[#0A2A43]">
+                  {locale === "fr" ? `Résultats de recherche (${searchResults.length})` : `Search results (${searchResults.length})`}
+                </h3>
+                <Button variant="ghost" onClick={() => setSearchQuery("")} className="text-[#4A4A4A]">
+                  {locale === "fr" ? "Effacer" : "Clear"}
+                </Button>
+              </div>
+
+              {searchResults.length === 0 ? (
+                <div className="text-center py-20">
+                  <p className="text-[#4A4A4A]">
+                    {locale === "fr" ? "Aucun résultat trouvé pour votre recherche." : "No results found for your search."}
+                  </p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {searchResults.map((cert) => (
+                    <Card key={cert.id} className="hover:shadow-xl transition-shadow border-none overflow-hidden h-full flex flex-col">
+                      <div className="h-40 bg-gradient-to-br from-[#153D63] to-[#0A2A43] flex items-center justify-center relative overflow-hidden">
+                        <Link href={`/certifications/${cert.slug}`} className="w-full h-full block">
+                          {cert.imageUrl ? (
+                            <img
+                              src={cert.imageUrl}
+                              alt={getCertTitle(cert)}
+                              className="w-full h-full object-cover transition-transform hover:scale-105"
+                            />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center">
+                              <BookOpen className="h-16 w-16 text-[#C9A44A]" />
+                            </div>
+                          )}
+                        </Link>
+                        <div className="absolute top-2 left-2">
+                          <Badge className="bg-[#C9A44A] text-[#0A2A43] text-[10px]">{cert.categoryName}</Badge>
+                        </div>
+                      </div>
+                      <CardContent className="p-6 flex-1 flex flex-col">
+                        <Badge className="mb-3 bg-gray-100 text-gray-600 w-fit">{cert.level}</Badge>
+                        <Link href={`/certifications/${cert.slug}`}>
+                          <h3 className="text-lg font-serif font-semibold text-[#0A2A43] mb-3 text-balance h-14 line-clamp-2 hover:text-[#C9A44A] transition-colors">
+                            {getCertTitle(cert)}
+                          </h3>
+                        </Link>
+                        <div className="flex items-center justify-between text-sm text-[#4A4A4A] mb-4 mt-auto">
+                          <div className="flex items-center gap-1">
+                            <Clock className="h-4 w-4" />
+                            <span>{cert.duration}</span>
+                          </div>
+                          <span className="font-semibold text-[#C9A44A]">{cert.price}</span>
+                        </div>
+                        <Link href={`/inscription?program=${encodeURIComponent(getCertTitle(cert))}${cert.imageUrl && !cert.imageUrl.startsWith("data:") ? `&image=${encodeURIComponent(cert.imageUrl)}` : ''}`}>
+                          <Button className="w-full bg-[#153D63] hover:bg-[#0A2A43]">
+                            {locale === "fr" ? "S'Inscrire" : locale === "es" ? "Registrarse" : "Register"}
+                          </Button>
+                        </Link>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              )}
+            </div>
           ) : (
             <Tabs value={selectedCategory} onValueChange={setSelectedCategory} className="w-full">
               <TabsList className="flex flex-wrap justify-center gap-2 h-auto p-2 bg-[#F5F6F7]">
-                {getFilteredCategories().map((category) => (
+                {categories.map((category) => (
                   <TabsTrigger
                     key={category.slug}
                     value={category.slug}
@@ -278,7 +348,7 @@ export default function CertificationsPage() {
                 ))}
               </TabsList>
 
-              {getFilteredCategories().map((category) => (
+              {categories.map((category) => (
                 <TabsContent key={category.slug} value={category.slug} className="mt-8">
                   {category.certifications.length === 0 ? (
                     <div className="text-center py-10">
@@ -292,22 +362,24 @@ export default function CertificationsPage() {
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                       {category.certifications.map((cert) => (
                         <Card key={cert.id} className="hover:shadow-xl transition-shadow border-none overflow-hidden">
-                          <div className="h-40 bg-gradient-to-br from-[#153D63] to-[#0A2A43] flex items-center justify-center relative overflow-hidden">
+                          <Link href={`/certifications/${cert.slug}`} className="h-40 bg-gradient-to-br from-[#153D63] to-[#0A2A43] flex items-center justify-center relative overflow-hidden block">
                             {cert.imageUrl ? (
                               <img
                                 src={cert.imageUrl}
                                 alt={getCertTitle(cert)}
-                                className="w-full h-full object-cover"
+                                className="w-full h-full object-cover transition-transform hover:scale-105"
                               />
                             ) : (
                               <BookOpen className="h-16 w-16 text-[#C9A44A]" />
                             )}
-                          </div>
+                          </Link>
                           <CardContent className="p-6">
                             <Badge className="mb-3 bg-[#C9A44A] text-[#0A2A43]">{cert.level}</Badge>
-                            <h3 className="text-lg font-serif font-semibold text-[#0A2A43] mb-3 text-balance">
-                              {getCertTitle(cert)}
-                            </h3>
+                            <Link href={`/certifications/${cert.slug}`}>
+                              <h3 className="text-lg font-serif font-semibold text-[#0A2A43] mb-3 text-balance hover:text-[#C9A44A] transition-colors">
+                                {getCertTitle(cert)}
+                              </h3>
+                            </Link>
                             <div className="flex items-center justify-between text-sm text-[#4A4A4A] mb-4">
                               <div className="flex items-center gap-1">
                                 <Clock className="h-4 w-4" />
@@ -315,9 +387,9 @@ export default function CertificationsPage() {
                               </div>
                               <span className="font-semibold text-[#C9A44A]">{cert.price}</span>
                             </div>
-                            <Link href={`/certifications/${cert.slug}`}>
+                            <Link href={`/inscription?program=${encodeURIComponent(getCertTitle(cert))}${cert.imageUrl && !cert.imageUrl.startsWith("data:") ? `&image=${encodeURIComponent(cert.imageUrl)}` : ''}`}>
                               <Button className="w-full bg-[#153D63] hover:bg-[#0A2A43]">
-                                {locale === "fr" ? "En savoir plus" : locale === "es" ? "Saber más" : "Learn more"}
+                                {locale === "fr" ? "S'Inscrire" : locale === "es" ? "Registrarse" : "Register"}
                               </Button>
                             </Link>
                           </CardContent>

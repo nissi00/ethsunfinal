@@ -99,6 +99,14 @@ export default function EventsPage() {
     }
   }
 
+  function getEventDescription(event: Event) {
+    switch (locale) {
+      case 'en': return event.descriptionEn || event.descriptionFr;
+      case 'es': return event.descriptionEs || event.descriptionFr;
+      default: return event.descriptionFr;
+    }
+  }
+
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
@@ -161,9 +169,12 @@ export default function EventsPage() {
                       <div className="flex justify-between items-start mb-4">
                         <Badge className="bg-[#C9A44A] text-[#0A2A43]">{event.type}</Badge>
                       </div>
-                      <h3 className="text-xl font-serif font-semibold text-[#0A2A43] mb-4 text-balance">
+                      <h3 className="text-xl font-serif font-semibold text-[#0A2A43] mb-2 text-balance">
                         {getEventTitle(event)}
                       </h3>
+                      <p className="text-[#4A4A4A] text-sm line-clamp-3 mb-4 leading-relaxed">
+                        {getEventDescription(event)}
+                      </p>
                       <div className="space-y-2 mb-6">
                         <div className="flex items-center gap-2 text-sm text-[#4A4A4A]">
                           <Calendar className="h-4 w-4 text-[#C9A44A]" />
@@ -180,7 +191,7 @@ export default function EventsPage() {
                           </div>
                         )}
                       </div>
-                      <Link href="/inscription">
+                      <Link href={`/inscription/event?event=${encodeURIComponent(getEventTitle(event))}${event.imageUrl && !event.imageUrl.startsWith("data:") ? `&image=${encodeURIComponent(event.imageUrl)}` : ''}`}>
                         <Button className="w-full bg-[#153D63] hover:bg-[#0A2A43]">
                           {locale === "fr" ? "S'Inscrire" : locale === "es" ? "Registrarse" : "Register"}
                         </Button>

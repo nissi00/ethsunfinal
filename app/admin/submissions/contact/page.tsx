@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import React, { useState, useEffect } from "react"
 import {
     Search,
     Filter,
@@ -13,7 +13,12 @@ import {
     Download,
     Mail,
     Phone,
-    Building2
+    Building2,
+    ChevronDown,
+    ChevronUp,
+    XCircle,
+    Check,
+    User
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -40,6 +45,7 @@ import {
     DialogTitle,
 } from "@/components/ui/dialog"
 import { toast } from "sonner"
+import * as XLSX from 'xlsx'
 
 interface ContactSubmission {
     id: string
@@ -51,6 +57,7 @@ interface ContactSubmission {
     subject: string
     message: string
     status: string
+    statut_final: string | null
     createdAt: string
 }
 
@@ -66,6 +73,17 @@ export default function ContactSubmissionsPage() {
     const [search, setSearch] = useState("")
     const [statusFilter, setStatusFilter] = useState("all")
     const [selectedSubmission, setSelectedSubmission] = useState<ContactSubmission | null>(null)
+    const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set())
+
+    const toggleRow = (id: string) => {
+        const newExpanded = new Set(expandedRows)
+        if (newExpanded.has(id)) {
+            newExpanded.delete(id)
+        } else {
+            newExpanded.add(id)
+        }
+        setExpandedRows(newExpanded)
+    }
 
     async function fetchSubmissions() {
         try {
@@ -105,7 +123,30 @@ export default function ContactSubmissionsPage() {
                 fetchSubmissions()
             }
         } catch (error) {
-            toast.error("Erreur lors de la mise à jour")
+            toast.error("Erreur")
+        }
+    }
+
+    async function updateStatutFinal(id: string, statut_final: string) {
+        try {
+            const res = await fetch(`/api/forms/contact/${id}`, {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ statut_final }),
+            })
+
+            if (res.ok) {
+                setSubmissions(prev => prev.map(s => s.id === id ? { ...s, statut_final } : s))
+                toast.success("Statut final mis à jour")
+                fetchSubmissions()
+            } else {
+                const errorData = await res.json().catch(() => ({}))
+                toast.error(`Erreur: ${errorData.error || res.statusText}`)
+                console.error("updateStatutFinal error:", errorData)
+            }
+        } catch (error) {
+            console.error("updateStatutFinal catch:", error)
+            toast.error("Erreur de connexion")
         }
     }
 
@@ -126,27 +167,25 @@ export default function ContactSubmissionsPage() {
         }
     }
 
-    function exportCSV() {
-        const headers = ["Prénom", "Nom", "Email", "Téléphone", "Organisation", "Sujet", "Message", "Statut", "Date"]
-        const rows = submissions.map(s => [
-            s.firstName,
-            s.lastName,
-            s.email,
-            s.phone || "",
-            s.organization || "",
-            s.subject,
-            s.message.replace(/"/g, '""'),
-            statusConfig[s.status as keyof typeof statusConfig]?.label || s.status,
-            new Date(s.createdAt).toLocaleDateString("fr-FR"),
-        ])
+    function exportExcel() {
+        const dataForExport = submissions.map(s => ({
+            "Prénom": s.firstName,
+            "Nom": s.lastName,
+            "Email": s.email,
+            "Téléphone": s.phone || "",
+            "Organisation": s.organization || "",
+            "Sujet": s.subject,
+            "Message": s.message,
+            "Statut": statusConfig[s.status as keyof typeof statusConfig]?.label || s.status,
+            "Statut Final": s.statut_final || "En attente",
+            "Date": new Date(s.createdAt).toLocaleDateString("fr-FR")
+        }))
 
-        const csv = [headers, ...rows].map(row => row.map(cell => `"${cell}"`).join(",")).join("\n")
-        const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" })
-        const url = URL.createObjectURL(blob)
-        const link = document.createElement("a")
-        link.href = url
-        link.download = `contacts_${new Date().toISOString().split("T")[0]}.csv`
-        link.click()
+        const worksheet = XLSX.utils.json_to_sheet(dataForExport)
+        const workbook = XLSX.utils.book_new()
+        XLSX.utils.book_append_sheet(workbook, worksheet, "Contacts")
+        
+        XLSX.writeFile(workbook, `contacts_${new Date().toISOString().split("T")[0]}.xlsx`)
     }
 
     function formatDate(dateString: string) {
@@ -171,9 +210,9 @@ export default function ContactSubmissionsPage() {
                         {submissions.length} message{submissions.length > 1 ? "s" : ""}
                     </p>
                 </div>
-                <Button onClick={exportCSV} variant="outline" className="gap-2">
+                <Button onClick={exportExcel} variant="outline" className="gap-2 text-[#0A2A43] border-[#0A2A43] hover:bg-[#0A2A43] hover:text-white">
                     <Download className="h-4 w-4" />
-                    Exporter CSV
+                    Exporter Excel
                 </Button>
             </div>
 
@@ -211,11 +250,18 @@ export default function ContactSubmissionsPage() {
                             <table className="w-full">
                                 <thead className="bg-gray-50 border-b">
                                     <tr>
+                                        <th className="px-4 py-3 text-left w-10"></th>
                                         <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                                             Contact
                                         </th>
                                         <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                                             Sujet
+                                        </th>
+                                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                                            Statut Traitement
+                                        </th>
+                                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                                            Statut Final
                                         </th>
                                         <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                                             Date
@@ -227,8 +273,16 @@ export default function ContactSubmissionsPage() {
                                 </thead>
                                 <tbody className="divide-y">
                                     {submissions.map((submission) => {
+                                        const status = statusConfig[submission.status as keyof typeof statusConfig]
+                                        const isExpanded = expandedRows.has(submission.id)
                                         return (
-                                            <tr key={submission.id} className="hover:bg-gray-50">
+                                            <React.Fragment key={submission.id}>
+                                            <tr className="hover:bg-gray-50 transition-colors">
+                                                <td className="px-4 py-4 text-center cursor-pointer" onClick={() => toggleRow(submission.id)}>
+                                                    <Button variant="ghost" size="sm" className="p-0 h-6 w-6">
+                                                        {isExpanded ? <ChevronUp className="h-4 w-4 text-gray-500" /> : <ChevronDown className="h-4 w-4 text-gray-500" />}
+                                                    </Button>
+                                                </td>
                                                 <td className="px-4 py-4">
                                                     <div className="flex flex-col">
                                                         <span className="font-medium text-[#0A2A43]">
@@ -249,6 +303,20 @@ export default function ContactSubmissionsPage() {
                                                         {submission.subject}
                                                     </span>
                                                 </td>
+                                                <td className="px-4 py-4">
+                                                    <Badge className={status?.color || "bg-gray-100"}>
+                                                        {status?.label || submission.status}
+                                                    </Badge>
+                                                </td>
+                                                <td className="px-4 py-4">
+                                                    {submission.statut_final === "Accepté" ? (
+                                                        <Badge className="bg-green-100 text-green-800 border-none"><Check className="w-3 h-3 mr-1"/> Accepté</Badge>
+                                                    ) : submission.statut_final === "Refusé" ? (
+                                                        <Badge className="bg-red-100 text-red-800 border-none"><XCircle className="w-3 h-3 mr-1"/> Refusé</Badge>
+                                                    ) : (
+                                                        <span className="text-gray-400 text-sm">En attente</span>
+                                                    )}
+                                                </td>
                                                 <td className="px-4 py-4 text-sm text-gray-500">
                                                     {formatDate(submission.createdAt)}
                                                 </td>
@@ -260,27 +328,83 @@ export default function ContactSubmissionsPage() {
                                                             </Button>
                                                         </DropdownMenuTrigger>
                                                         <DropdownMenuContent align="end">
-                                                            <DropdownMenuItem onClick={() => {
-                                                                setSelectedSubmission(submission)
-                                                                // Automatically mark as seen when viewed if it was new
-                                                                if (submission.status === "new") {
-                                                                    updateStatus(submission.id, "completed")
-                                                                }
-                                                            }}>
-                                                                <Eye className="h-4 w-4 mr-2" />
-                                                                Voir détails
+                                                            <div className="px-2 py-1.5 text-xs font-semibold text-gray-500 uppercase tracking-wider">Traitement</div>
+                                                            <DropdownMenuItem onClick={() => updateStatus(submission.id, "in_progress")}>
+                                                                <Clock className="h-4 w-4 mr-2 text-yellow-500" />
+                                                                Marquer en cours
                                                             </DropdownMenuItem>
+                                                            <DropdownMenuItem onClick={() => updateStatus(submission.id, "completed")}>
+                                                                <CheckCircle className="h-4 w-4 mr-2 text-green-500" />
+                                                                Marquer traité
+                                                            </DropdownMenuItem>
+
+                                                            <div className="h-px bg-gray-100 my-1" />
+                                                            <div className="px-2 py-1.5 text-xs font-semibold text-gray-500 uppercase tracking-wider">Décision Finale</div>
+                                                            <DropdownMenuItem onClick={() => updateStatutFinal(submission.id, "Accepté")}>
+                                                                <Check className="h-4 w-4 mr-2 text-green-600" />
+                                                                Accepter
+                                                            </DropdownMenuItem>
+                                                            <DropdownMenuItem onClick={() => updateStatutFinal(submission.id, "Refusé")}>
+                                                                <XCircle className="h-4 w-4 mr-2 text-red-600" />
+                                                                Refuser
+                                                            </DropdownMenuItem>
+
+                                                            <div className="h-px bg-gray-100 my-1" />
                                                             <DropdownMenuItem
                                                                 onClick={() => deleteSubmission(submission.id)}
-                                                                className="text-red-600"
+                                                                className="text-red-600 focus:bg-red-50 focus:text-red-600"
                                                             >
                                                                 <Trash2 className="h-4 w-4 mr-2" />
                                                                 Supprimer
                                                             </DropdownMenuItem>
                                                         </DropdownMenuContent>
                                                     </DropdownMenu>
+                                                    <div className="flex justify-end gap-1 mt-2">
+                                                        <Button variant="ghost" size="icon" className="h-8 w-8 text-green-600 hover:bg-green-50" onClick={() => updateStatutFinal(submission.id, "Accepté")} title="Accepter">
+                                                            <Check className="h-4 w-4" />
+                                                        </Button>
+                                                        <Button variant="ghost" size="icon" className="h-8 w-8 text-red-600 hover:bg-red-50" onClick={() => updateStatutFinal(submission.id, "Refusé")} title="Refuser">
+                                                            <XCircle className="h-4 w-4" />
+                                                        </Button>
+                                                        <Button variant="ghost" size="icon" className="h-8 w-8 text-gray-400 hover:text-red-600 hover:bg-red-50" onClick={() => deleteSubmission(submission.id)} title="Supprimer">
+                                                            <Trash2 className="h-4 w-4" />
+                                                        </Button>
+                                                    </div>
                                                 </td>
                                             </tr>
+                                            {isExpanded && (
+                                                <tr className="bg-gray-50/50">
+                                                    <td colSpan={7} className="p-0">
+                                                        <div className="px-12 py-6 grid grid-cols-1 md:grid-cols-2 gap-6 border-b border-gray-100">
+                                                            {/* Infos Contact */}
+                                                            <div className="space-y-3">
+                                                                <h4 className="font-semibold text-[#0A2A43] flex items-center gap-2 border-b pb-2">
+                                                                    <User className="h-4 w-4 text-[#C9A44A]" /> Coordonnées
+                                                                </h4>
+                                                                <div className="grid grid-cols-2 gap-y-2 text-sm">
+                                                                    <span className="text-gray-500">Email:</span>
+                                                                    <a href={`mailto:${submission.email}`} className="text-blue-600 hover:underline">{submission.email}</a>
+                                                                    
+                                                                    <span className="text-gray-500">Téléphone:</span>
+                                                                    {submission.phone ? <a href={`tel:${submission.phone}`} className="text-blue-600 hover:underline">{submission.phone}</a> : <span className="text-gray-400 italic">Non renseigné</span>}
+                                                                    
+                                                                    <span className="text-gray-500">Organisation:</span>
+                                                                    <span className="text-gray-900">{submission.organization || "-"}</span>
+                                                                </div>
+                                                            </div>
+
+                                                            {/* Message */}
+                                                            <div className="col-span-1 md:col-span-2 space-y-2 mt-2">
+                                                                <h4 className="font-medium text-gray-700">Message :</h4>
+                                                                <div className="bg-white p-4 rounded-lg border text-sm text-gray-700 whitespace-pre-wrap">
+                                                                    {submission.message}
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            )}
+                                            </React.Fragment>
                                         )
                                     })}
                                 </tbody>

@@ -36,6 +36,7 @@ const navigation = [
             { name: "Inscriptions", href: "/admin/submissions/inscription" },
             { name: "Franchise", href: "/admin/submissions/franchise" },
             { name: "Recrutement", href: "/admin/submissions/recruitment" },
+            { name: "Événements", href: "/admin/submissions/event" },
         ],
     },
     {
@@ -45,6 +46,7 @@ const navigation = [
             { name: "Statistiques", href: "/admin/content/stats" },
             { name: "Certifications", href: "/admin/content/certifications" },
             { name: "Offres d'emploi", href: "/admin/content/jobs" },
+            { name: "Ressources PDF", href: "/admin/content/resources" },
         ],
     },
     {
@@ -78,6 +80,7 @@ export function AdminSidebar() {
         inscription: 0,
         franchise: 0,
         recruitment: 0,
+        event: 0,
         total: 0
     })
 
@@ -106,6 +109,7 @@ export function AdminSidebar() {
         if (href.includes("/inscription")) return notifications.inscription
         if (href.includes("/franchise")) return notifications.franchise
         if (href.includes("/recruitment")) return notifications.recruitment
+        if (href.includes("/event")) return notifications.event
         return 0
     }
 

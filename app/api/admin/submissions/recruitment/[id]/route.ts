@@ -24,11 +24,15 @@ export async function PATCH(
     try {
         const body = await req.json()
 
-        // Update status
-        if (body.status) {
+        // Update status or statut_final
+        if (body.status || body.statut_final) {
+            const dataToUpdate: any = {}
+            if (body.status) dataToUpdate.status = body.status
+            if (body.statut_final) dataToUpdate.statut_final = body.statut_final
+
             const submission = await prisma.recruitmentSubmission.update({
                 where: { id: params.id },
-                data: { status: body.status }
+                data: dataToUpdate
             })
             return NextResponse.json(submission)
         }

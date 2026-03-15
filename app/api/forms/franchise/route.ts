@@ -70,11 +70,11 @@ export async function GET(request: NextRequest) {
 
         if (search) {
             where.OR = [
-                { firstName: { contains: search } },
-                { lastName: { contains: search } },
-                { email: { contains: search } },
-                { city: { contains: search } },
-                { country: { contains: search } },
+                { firstName: { contains: search, mode: "insensitive" } },
+                { lastName: { contains: search, mode: "insensitive" } },
+                { email: { contains: search, mode: "insensitive" } },
+                { city: { contains: search, mode: "insensitive" } },
+                { country: { contains: search, mode: "insensitive" } },
             ]
         }
 

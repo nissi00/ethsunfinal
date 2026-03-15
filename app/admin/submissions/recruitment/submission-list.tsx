@@ -18,24 +18,47 @@ interface Submission {
     coverLetterUrl: string | null
     diplomaUrl: string | null
     status: string
+    statut_final: string | null
     createdAt: string
 }
 
 export function SubmissionList({ initialSubmissions }: { initialSubmissions: Submission[] }) {
     const router = useRouter()
 
+    async function updateStatutFinal(id: string, statut_final: string) {
+        try {
+            const res = await fetch(`/api/admin/submissions/recruitment/${id}`, {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ statut_final }),
+            })
+            if (res.ok) {
+                toast.success("Statut final mis à jour")
+                router.refresh()
+            } else {
+                const errorData = await res.json().catch(() => ({}))
+                toast.error(`Erreur: ${errorData.error || res.statusText}`)
+            }
+        } catch (error) {
+            toast.error("Erreur de connexion")
+        }
+    }
+
     async function updateStatus(id: string, status: string) {
         try {
             const res = await fetch(`/api/admin/submissions/recruitment/${id}`, {
                 method: "PATCH",
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ status }),
             })
             if (res.ok) {
                 toast.success("Statut mis à jour")
                 router.refresh()
+            } else {
+                toast.error("Erreur mise à jour statut")
             }
         } catch (error) {
-            toast.error("Erreur update status")
+            toast.error("Erreur de connexion")
         }
     }
 
@@ -53,7 +76,7 @@ export function SubmissionList({ initialSubmissions }: { initialSubmissions: Sub
                 toast.error("Erreur lors de la suppression")
             }
         } catch (error) {
-            toast.error("Erreur")
+            toast.error("Erreur de connexion")
         }
     }
 
@@ -88,9 +111,16 @@ export function SubmissionList({ initialSubmissions }: { initialSubmissions: Sub
                                     Nouveau
                                 </Badge>
                             )}
-                            {submission.status === 'accepted' && <Badge className="bg-green-100 text-green-800 border-none">Accepté</Badge>}
-                            {submission.status === 'rejected' && <Badge className="bg-red-100 text-red-800 border-none">Refusé</Badge>}
                             {submission.status === 'contacted' && <Badge className="bg-yellow-100 text-yellow-800 border-none">En cours</Badge>}
+                            
+                            {/* Statut Final */}
+                            {submission.statut_final === 'Accepté' ? (
+                                <Badge className="bg-green-100 text-green-800 border-none">Accepté</Badge>
+                            ) : submission.statut_final === 'Refusé' ? (
+                                <Badge className="bg-red-100 text-red-800 border-none">Refusé</Badge>
+                            ) : (
+                                <span className="text-xs text-gray-400">En attente</span>
+                            )}
                         </div>
                         <div className="flex items-center gap-2">
                             <Badge variant="outline">{submission.role}</Badge>
@@ -106,12 +136,12 @@ export function SubmissionList({ initialSubmissions }: { initialSubmissions: Sub
                                 </Button>
                             )}
 
-                            <div className="flex gap-1">
+                             <div className="flex gap-1">
                                 <Button
                                     variant="outline"
                                     size="sm"
                                     className="text-green-600 border-green-200 hover:bg-green-50 h-8"
-                                    onClick={() => updateStatus(submission.id, 'accepted')}
+                                    onClick={() => updateStatutFinal(submission.id, 'Accepté')}
                                 >
                                     Accepter
                                 </Button>
@@ -119,7 +149,7 @@ export function SubmissionList({ initialSubmissions }: { initialSubmissions: Sub
                                     variant="outline"
                                     size="sm"
                                     className="text-red-600 border-red-200 hover:bg-red-50 h-8"
-                                    onClick={() => updateStatus(submission.id, 'rejected')}
+                                    onClick={() => updateStatutFinal(submission.id, 'Refusé')}
                                 >
                                     Refuser
                                 </Button>
@@ -155,7 +185,7 @@ export function SubmissionList({ initialSubmissions }: { initialSubmissions: Sub
                                     <div className="flex justify-between items-center text-sm border p-2 rounded group">
                                         <span className="flex items-center gap-2"><FileText className="h-4 w-4" /> CV</span>
                                         <div className="flex items-center">
-                                            <a href={submission.cvUrl} download={`CV_${submission.lastName}.pdf`} target="_blank" rel="noopener noreferrer">
+                                            <a href={submission.cvUrl} download={`CV_Recrutement_${submission.lastName}.pdf`} target="_blank" rel="noopener noreferrer">
                                                 <Button size="sm" variant="ghost"><Download className="h-4 w-4" /></Button>
                                             </a>
                                             <Button

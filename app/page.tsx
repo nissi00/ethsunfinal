@@ -1,6 +1,6 @@
 "use client"
 
-import { useContext } from "react"
+import { useContext, useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Navbar } from "@/components/navbar"
@@ -11,11 +11,30 @@ import { Calendar, Building2, Users, Globe, Award, BookOpen, Target } from "luci
 import { type Locale, getTranslation } from "@/lib/i18n"
 import Link from "next/link"
 import { LanguageContext } from "@/components/language-provider"
+import { VideoCarousel } from "@/components/video-carousel"
 
 export default function Home() {
   const context = useContext(LanguageContext)
   const locale = (context?.locale as Locale) || "fr"
   const t = getTranslation(locale)
+
+  const [dynamicCertifications, setDynamicCertifications] = useState<any[]>([])
+
+  useEffect(() => {
+    async function fetchCertifications() {
+      try {
+        const res = await fetch("/api/site/certifications")
+        if (res.ok) {
+          const data = await res.json()
+          // We only want the first 3 certifications
+          setDynamicCertifications(data.slice(0, 3))
+        }
+      } catch (error) {
+        console.error("Error fetching certifications:", error)
+      }
+    }
+    fetchCertifications()
+  }, [])
 
   const features = [
     {
@@ -61,20 +80,14 @@ export default function Home() {
           background: `linear-gradient(135deg, var(--color-primary, #0A2A43), var(--color-secondary, #153D63), var(--color-primary, #0A2A43))`
         }}
       >
-        {/* Background Video */}
-        <video
-          autoPlay
-          muted
-          loop
-          playsInline
-          className="absolute inset-0 top-0 left-0 w-full h-full object-cover"
-        >
-          <source src="/hero-video.mp4" type="video/mp4" />
-          Your browser does not support the video tag.
-        </video>
-
-        {/* Overlay pour lisibilité */}
-        <div className="absolute inset-0 bg-black/50" />
+        {/* Background Video Animation */}
+        <VideoCarousel
+          videos={[
+            "/hero-video-1.mp4",
+            "/hero-video-2.mp4",
+            "/hero-video-3.mp4"
+          ]}
+        />
         <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-4xl mx-auto text-center">
             <div
@@ -209,74 +222,75 @@ export default function Home() {
             </p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
-            {[
-              {
-                slug: "leadership-strategique-et-gouvernance",
-                title: t.home.leadership,
-                category: t.home.management,
-                duration: t.home.fourWeeks,
-              },
-              {
-                slug: "gouvernance-publique-administration",
-                title: t.home.governance,
-                category: t.home.governanceCategory,
-                duration: t.home.sixWeeks,
-              },
-              {
-                slug: "ethique-professionnelle-deontologie",
-                title: t.home.ethics,
-                category: t.home.ethicsCategory,
-                duration: t.home.fiveWeeks,
-              },
-            ].map((cert, index) => (
-              <Card key={index} className="hover:shadow-xl transition-shadow border-none overflow-hidden">
-                <div
-                  className="h-48 relative overflow-hidden"
-                  style={{
-                    background: `linear-gradient(135deg, var(--color-secondary, #153D63), var(--color-primary, #0A2A43))`
-                  }}
-                >
-                  <div className="absolute inset-0 bg-[url('/professional-training-oxford.jpg')] bg-cover bg-center opacity-20" />
-                  <div className="absolute top-4 left-4">
-                    <span
-                      className="px-3 py-1 rounded-full text-xs font-semibold"
-                      style={{
-                        backgroundColor: "var(--color-accent, #C9A44A)",
-                        color: "var(--color-primary, #0A2A43)"
-                      }}
-                    >
-                      {cert.category}
-                    </span>
-                  </div>
-                </div>
-                <CardContent className="p-6">
-                  <h3
-                    className="text-xl font-serif font-semibold mb-2 text-balance"
-                    style={{ color: "var(--color-primary, #0A2A43)" }}
-                  >
-                    {cert.title}
-                  </h3>
+            {dynamicCertifications.length > 0 ? (
+              dynamicCertifications.map((cert, index) => (
+                <Card key={cert.id || index} className="hover:shadow-xl transition-shadow border-none overflow-hidden">
                   <div
-                    className="flex items-center gap-2 text-sm mb-4"
-                    style={{ color: "var(--color-text, #4A4A4A)" }}
+                    className="h-48 relative overflow-hidden"
+                    style={{
+                      background: `linear-gradient(135deg, var(--color-secondary, #153D63), var(--color-primary, #0A2A43))`
+                    }}
                   >
-                    <Award
-                      className="h-4 w-4"
-                      style={{ color: "var(--color-accent, #C9A44A)" }}
+                    <div
+                      className="absolute inset-0 bg-cover bg-center opacity-60 transition-transform duration-500 hover:scale-110"
+                      style={{
+                        backgroundImage: `url('${cert.imageUrl || "/professional-training-oxford.jpg"}')`
+                      }}
                     />
-                    <span>{cert.duration}</span>
+                    <div className="absolute inset-0 bg-black/20" />
+                    <div className="absolute top-4 left-4">
+                      <span
+                        className="px-3 py-1 rounded-full text-xs font-semibold"
+                        style={{
+                          backgroundColor: "var(--color-accent, #C9A44A)",
+                          color: "var(--color-primary, #0A2A43)"
+                        }}
+                      >
+                        {locale === "en" ? cert.category?.nameEn : locale === "es" ? cert.category?.nameEs : cert.category?.nameFr || cert.category?.nameFr}
+                      </span>
+                    </div>
                   </div>
-                  <Link href={`/certifications/${cert.slug}`}>
-                    <Button
-                      className="w-full text-white"
-                      style={{ backgroundColor: "var(--color-secondary, #153D63)" }}
+                  <CardContent className="p-6">
+                    <h3
+                      className="text-xl font-serif font-semibold mb-2 text-balance h-14 line-clamp-2"
+                      style={{ color: "var(--color-primary, #0A2A43)" }}
                     >
-                      {t.cta.learnmore1}
-                    </Button>
-                  </Link>
-                </CardContent>
-              </Card>
-            ))}
+                      {locale === "en" ? cert.titleEn : locale === "es" ? cert.titleEs : cert.titleFr || cert.titleFr}
+                    </h3>
+                    <div
+                      className="flex items-center gap-2 text-sm mb-4"
+                      style={{ color: "var(--color-text, #4A4A4A)" }}
+                    >
+                      <Award
+                        className="h-4 w-4"
+                        style={{ color: "var(--color-accent, #C9A44A)" }}
+                      />
+                      <span>{cert.duration}</span>
+                    </div>
+                    <Link href={`/certifications/${cert.slug}`}>
+                      <Button
+                        className="w-full text-white"
+                        style={{ backgroundColor: "var(--color-secondary, #153D63)" }}
+                      >
+                        {t.cta.learnmore1}
+                      </Button>
+                    </Link>
+                  </CardContent>
+                </Card>
+              ))
+            ) : (
+                // Fallback while loading or if no data
+                Array.from({ length: 3 }).map((_, index) => (
+                  <Card key={index} className="hover:shadow-xl transition-shadow border-none overflow-hidden animate-pulse">
+                    <div className="h-48 bg-gray-200" />
+                    <CardContent className="p-6">
+                      <div className="h-6 bg-gray-200 rounded w-3/4 mb-4" />
+                      <div className="h-4 bg-gray-200 rounded w-1/2 mb-4" />
+                      <div className="h-10 bg-gray-200 rounded w-full" />
+                    </CardContent>
+                  </Card>
+                ))
+            )}
           </div>
           <div className="text-center">
             <Link href="/certifications">
@@ -295,8 +309,6 @@ export default function Home() {
           </div>
         </div>
       </section>
-
-
 
       {/* CTA Section - Using CSS variables */}
       <section

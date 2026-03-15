@@ -6,12 +6,35 @@ import { Mail, Phone, MapPin, Facebook, Twitter, Linkedin, Instagram } from "luc
 import { type Locale, getTranslation } from "@/lib/i18n"
 import { useSiteSettings } from "@/components/site-settings-provider"
 import { LanguageContext } from "@/components/language-provider"
+import { useState, useEffect } from "react"
 
 export function Footer() {
   const context = useContext(LanguageContext)
   const locale = (context?.locale as Locale) || "fr"
   const t = getTranslation(locale)
   const settings = useSiteSettings()
+  const [legalLinks, setLegalLinks] = useState({ privacy: "", terms: "" })
+
+  useEffect(() => {
+    async function fetchLegal() {
+      try {
+        const [privacyRes, termsRes] = await Promise.all([
+          fetch("/api/site/resources?slug=privacy-policy"),
+          fetch("/api/site/resources?slug=terms-of-sale")
+        ])
+        const privacyData = await privacyRes.json()
+        const termsData = await termsRes.json()
+        
+        setLegalLinks({
+          privacy: privacyData[0]?.fileUrl || "/privacy",
+          terms: termsData[0]?.fileUrl || "/terms"
+        })
+      } catch (e) {
+        console.error("Failed to fetch legal links")
+      }
+    }
+    fetchLegal()
+  }, [])
 
   return (
     <footer
@@ -162,14 +185,14 @@ export function Footer() {
             </h3>
             <ul className="space-y-2 text-sm">
               <li>
-                <Link href="/privacy" className="hover:opacity-75 transition">
+                <a href={legalLinks.privacy} target="_blank" rel="noopener noreferrer" className="hover:opacity-75 transition">
                   {t.footer.privacy}
-                </Link>
+                </a>
               </li>
               <li>
-                <Link href="/terms" className="hover:opacity-75 transition">
+                <a href={legalLinks.terms} target="_blank" rel="noopener noreferrer" className="hover:opacity-75 transition">
                   {t.footer.terms}
-                </Link>
+                </a>
               </li>
             </ul>
           </div>

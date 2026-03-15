@@ -7,6 +7,7 @@ import { Clock, Award, Globe, Users, Loader2, BookOpen, CheckCircle } from "luci
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { Card } from "@/components/ui/card";
 
 interface Module {
   id: string;
@@ -15,6 +16,7 @@ interface Module {
 }
 
 interface Certification {
+  imageUrl: string | Blob | undefined;
   id: string;
   titleFr: string;
   descriptionFr: string;
@@ -116,7 +118,7 @@ export default function CertPage() {
           </div>
 
           <div className="mt-8">
-            <Link href="/inscription">
+            <Link href={`/inscription?program=${encodeURIComponent(cert.titleFr)}${cert.imageUrl && typeof cert.imageUrl === 'string' && !cert.imageUrl.startsWith("data:") ? `&image=${encodeURIComponent(cert.imageUrl)}` : ''}`}>
               <Button size="lg" className="bg-[#C9A44A] hover:bg-[#b08f3a] text-[#0A2A43] font-bold">
                 S'inscrire maintenant
               </Button>
@@ -200,6 +202,19 @@ export default function CertPage() {
                 </Button>
               </Link>
             </div>
+            <Card key={cert.id} className="hover:shadow-xl transition-shadow border-none overflow-hidden">
+              <div className="h-[500px] bg-gradient-to-br from-[#153D63] to-[#0A2A43] flex items-center justify-center relative overflow-hidden">
+                {cert.imageUrl ? (
+                  <img
+                    src={cert.imageUrl as string}
+                    className="w-full h-full object-cover"
+                    alt={cert.titleFr}
+                  />
+                ) : (
+                  <BookOpen className="h-16 w-16 text-[#C9A44A]" />
+                )}
+              </div>
+            </Card>
           </div>
         </div>
 

@@ -8,18 +8,29 @@ export async function PATCH(
 ) {
     try {
         const body = await request.json()
-        const { status } = body
+        const { status, statut_final } = body
 
-        if (!status || !["new", "in_progress", "completed"].includes(status)) {
+        if (status && !["new", "in_progress", "completed"].includes(status)) {
             return NextResponse.json(
                 { error: "Statut invalide" },
                 { status: 400 }
             )
         }
 
+        if (statut_final && !["Accepté", "Refusé"].includes(statut_final)) {
+            return NextResponse.json(
+                { error: "Statut final invalide" },
+                { status: 400 }
+            )
+        }
+
+        const dataToUpdate: any = {}
+        if (status) dataToUpdate.status = status
+        if (statut_final) dataToUpdate.statut_final = statut_final
+
         const submission = await prisma.franchiseSubmission.update({
             where: { id: params.id },
-            data: { status },
+            data: dataToUpdate,
         })
 
         return NextResponse.json(submission)

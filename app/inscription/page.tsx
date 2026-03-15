@@ -1,6 +1,6 @@
 "use client"
 
-import { useContext, useState, useMemo } from "react"
+import { useContext, useState, useMemo, useEffect } from "react"
 import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
 import { Button } from "@/components/ui/button"
@@ -13,45 +13,87 @@ import { CheckCircle, Loader2, Upload, Search } from "lucide-react"
 import { getTranslation, type Locale } from "@/lib/i18n"
 import { LanguageContext } from "@/components/language-provider"
 import { toast } from "sonner"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+import { cn } from "@/lib/utils"
+import { useSearchParams } from "next/navigation"
 
-const PROGRAMS = [
-  "Management & Leadership",
-  "Éthique & Conformité",
-  "Gouvernance Publique",
-  "Ressources Humaines",
-  "Transformation Numérique & IA",
-  "Immobilier & Construction",
-  "Tourisme & Hôtellerie",
-  "Entrepreneuriat"
-]
+// Les programmes sont désormais chargés dynamiquement depuis l'API
 
 export default function InscriptionPage() {
   const context = useContext(LanguageContext)
   const locale = (context?.locale as Locale) || "fr"
   const t = getTranslation(locale)
+  const searchParams = useSearchParams()
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)
   const [cvFile, setCvFile] = useState<File | null>(null)
   const [uploading, setUploading] = useState(false)
-  const [searchTerm, setSearchTerm] = useState("")
+  const [programsData, setProgramsData] = useState<any[]>([])
+  const [showSearchSuggestions, setShowSearchSuggestions] = useState(false)
 
+  // Pre-fill fields from URL
+  const programFromUrl = searchParams.get("program") ? decodeURIComponent(searchParams.get("program") as string) : null
+  const imageFromUrl = searchParams.get("image") ? decodeURIComponent(searchParams.get("image") as string) : null
+
+  const [searchTerm, setSearchTerm] = useState(programFromUrl || "")
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
     email: "",
     phone: "",
     country: "",
-    program: "",
+    program: programFromUrl || "",
     profile: "",
     motivation: "",
     lastDiploma: "",
     cvUrl: "",
   })
 
-  // Filter programs based on search term
+  useEffect(() => {
+    async function fetchCertifications() {
+      try {
+        const res = await fetch("/api/site/certifications")
+        if (res.ok) {
+          const data = await res.json()
+          setProgramsData(data)
+        }
+      } catch (error) {
+        console.error("Error fetching certifications:", error)
+      }
+    }
+    fetchCertifications()
+  }, [locale])
+
+  const programs = useMemo(() => {
+    return programsData.map((cert: any) => {
+      if (locale === "en") return cert.titleEn || cert.titleFr
+      if (locale === "es") return cert.titleEs || cert.titleFr
+      return cert.titleFr
+    })
+  }, [programsData, locale])
+
+  const selectedProgramData = useMemo(() => {
+    return programsData.find(p => {
+      const title = locale === 'en' ? (p.titleEn || p.titleFr) : locale === 'es' ? (p.titleEs || p.titleFr) : p.titleFr
+      return title === formData.program
+    })
+  }, [programsData, formData.program, locale])
+
+  const displayImage = imageFromUrl || selectedProgramData?.imageUrl
+
+  useEffect(() => {
+    if (programFromUrl) {
+      setFormData(prev => ({ ...prev, program: programFromUrl }))
+      setSearchTerm(programFromUrl)
+    }
+  }, [programFromUrl])
+
+  // Filtrage des programmes basé sur le terme de recherche
   const filteredPrograms = useMemo(() => {
-    return PROGRAMS.filter(p => p.toLowerCase().includes(searchTerm.toLowerCase()))
-  }, [searchTerm])
+    const query = searchTerm.toLowerCase().trim()
+    if (!query) return programs
+    return programs.filter(p => p.toLowerCase().includes(query))
+  }, [searchTerm, programs])
 
   async function handleFileUpload(file: File) {
     if (!file) return null
@@ -103,17 +145,22 @@ export default function InscriptionPage() {
         finalCvUrl = uploadedUrl
       }
 
+      const payload = {
+        ...formData,
+        cvUrl: finalCvUrl
+      };
+      console.log("Sending payload:", payload);
+
       const res = await fetch("/api/forms/inscription", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          ...formData,
-          cvUrl: finalCvUrl
-        }),
+        body: JSON.stringify(payload),
       })
 
       if (res.ok) {
-        setSuccess(true)
+        console.log("Submission successful");
+        toast.success("Inscription envoyée avec succès !");
+        setSuccess(true);
         setFormData({
           firstName: "",
           lastName: "",
@@ -128,12 +175,14 @@ export default function InscriptionPage() {
         })
         setCvFile(null)
         setSearchTerm("")
-        toast.success("Inscription envoyée avec succès !")
       } else {
-        throw new Error()
+        const errorData = await res.json().catch(() => ({}));
+        console.error("Submission failed:", errorData);
+        throw new Error(errorData.message || errorData.error || "Erreur serveur");
       }
-    } catch (error) {
-      toast.error("Erreur lors de l'envoi. Veuillez réessayer.")
+    } catch (error: any) {
+      console.error("Submission catch error:", error);
+      toast.error(error.message || "Erreur lors de l'envoi. Veuillez réessayer.");
     } finally {
       setLoading(false)
       setUploading(false)
@@ -141,7 +190,7 @@ export default function InscriptionPage() {
   }
 
   function handleChange(field: string, value: string) {
-    setFormData({ ...formData, [field]: value })
+    setFormData(prev => ({ ...prev, [field]: value }))
   }
 
   return (
@@ -183,6 +232,23 @@ export default function InscriptionPage() {
                 </div>
               ) : (
                 <form onSubmit={handleSubmit} className="space-y-6">
+                  {/* Identified Source Context */}
+                  {programFromUrl && (
+                    <div className="mb-6 p-4 bg-[#0A2A43]/5 border-l-4 border-[#C9A44A] rounded-r-lg flex items-center gap-4">
+                      {displayImage && (
+                        <div className="hidden sm:block flex-shrink-0 w-24 h-24 relative rounded-md overflow-hidden bg-white shadow-sm">
+                           <img src={displayImage} alt={programFromUrl || ''} className="object-cover w-full h-full" />
+                        </div>
+                      )}
+                      <div>
+                        <h4 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-1">
+                          {locale === 'fr' ? 'Inscription à la formation' : 'Registration for'}
+                        </h4>
+                        <p className="text-lg font-serif font-bold text-[#0A2A43]">{programFromUrl}</p>
+                      </div>
+                    </div>
+                  )}
+
                   {/* Identité */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
@@ -247,35 +313,96 @@ export default function InscriptionPage() {
                     </div>
                   </div>
 
-                  {/* Programme avec Recherche */}
-                  <div className="space-y-2">
-                    <Label>{t.forms.program} *</Label>
-                    <div className="relative mb-2">
-                      <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
-                      <Input
-                        placeholder={locale === 'fr' ? "Rechercher une formation..." : "Search a program..."}
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        className="pl-9"
-                      />
+                  {/* Programme avec Sélection et Recherche Séparées */}
+                  <div className="space-y-4">
+                    <div className="space-y-2">
+                      <Label>{t.forms.program} *</Label>
+                      
+                      {/* Barre de Recherche (Autocomplete Indépendant) */}
+                      {!programFromUrl && (
+                        <div className="relative group">
+                          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 group-focus-within:text-[#C9A44A] transition-colors" />
+                          <Input
+                            placeholder={locale === 'fr' ? "Rechercher une formation..." : "Search a program..."}
+                            value={searchTerm}
+                            onChange={(e) => {
+                              setSearchTerm(e.target.value)
+                              setShowSearchSuggestions(true)
+                            }}
+                            onFocus={() => setShowSearchSuggestions(true)}
+                            className="pl-10 h-11 border-gray-300 focus:border-[#C9A44A] transition-all"
+                          />
+                          
+                          {showSearchSuggestions && searchTerm.trim() !== "" && (
+                            <>
+                              <div className="fixed inset-0 z-10" onClick={() => setShowSearchSuggestions(false)} />
+                              <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-md shadow-lg z-20 max-h-48 overflow-y-auto scrollbar-thin">
+                                {filteredPrograms.length > 0 ? (
+                                  filteredPrograms.map((prog) => (
+                                    <div
+                                      key={prog}
+                                      className="px-4 py-2 text-sm hover:bg-gray-50 cursor-pointer text-gray-700 transition-colors"
+                                      onClick={() => {
+                                        handleChange("program", prog)
+                                        setSearchTerm(prog)
+                                        setShowSearchSuggestions(false)
+                                      }}
+                                    >
+                                      {prog}
+                                    </div>
+                                  ))
+                                ) : (
+                                  <div className="p-3 text-xs text-gray-500 italic text-center">
+                                    {locale === 'fr' ? 'Aucun résultat' : 'No results'}
+                                  </div>
+                                )}
+                              </div>
+                            </>
+                          )}
+                        </div>
+                      )}
+
+                      {programFromUrl ? (
+                        <Input
+                          value={formData.program}
+                          disabled
+                          className="w-full h-12 border-gray-300 bg-gray-50 opacity-100 text-gray-700 font-medium"
+                        />
+                      ) : (
+                        <Select
+                          value={formData.program}
+                          onValueChange={(value) => handleChange("program", value)}
+                        >
+                          <SelectTrigger className="w-full h-12 border-gray-300 hover:border-[#C9A44A] transition-colors">
+                            <SelectValue placeholder={t.forms.selectProgram} />
+                          </SelectTrigger>
+                          <SelectContent className="max-h-64 border-[#C9A44A]">
+                            {programs.length > 0 ? (
+                              programs.map((prog) => (
+                                <SelectItem 
+                                  key={prog}
+                                  value={prog}
+                                  className="cursor-pointer py-3"
+                                >
+                                  <span className="truncate pr-8 block">
+                                    {prog}
+                                  </span>
+                                </SelectItem>
+                              ))
+                            ) : (
+                              <div className="p-4 text-sm text-gray-500 text-center italic">
+                                {locale === 'fr' ? 'Chargement...' : 'Loading...'}
+                              </div>
+                            )}
+                          </SelectContent>
+                        </Select>
+                      )}
+                      {programFromUrl && (
+                        <p className="text-xs text-gray-500 mt-1">
+                          {locale === "fr" ? "La certification est présélectionnée basé sur votre choix." : "The certification is pre-selected based on your choice."}
+                        </p>
+                      )}
                     </div>
-                    <Select
-                      value={formData.program}
-                      onValueChange={(value) => handleChange("program", value)}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder={t.forms.selectProgram} />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {filteredPrograms.length > 0 ? (
-                          filteredPrograms.map((prog) => (
-                            <SelectItem key={prog} value={prog}>{prog}</SelectItem>
-                          ))
-                        ) : (
-                          <div className="p-2 text-sm text-gray-500 text-center">{locale === 'fr' ? 'Aucun résultat' : 'No results'}</div>
-                        )}
-                      </SelectContent>
-                    </Select>
                   </div>
 
                   {/* Profil */}
@@ -300,17 +427,18 @@ export default function InscriptionPage() {
 
                   {/* CV Upload */}
                   <div>
-                    <Label>{t.forms.cv} - {locale === 'fr' ? 'Optionnel' : 'Optional'}</Label>
+                    <Label>{t.forms.cv} <span className="text-red-500">*</span></Label>
                     <div className="mt-2 flex items-center gap-4">
                       <Input
                         type="file"
                         accept=".pdf,.doc,.docx"
+                        required
                         onChange={(e) => setCvFile(e.target.files?.[0] || null)}
                         className="cursor-pointer"
                       />
                       {uploading && <Loader2 className="h-4 w-4 animate-spin text-[#C9A44A]" />}
                     </div>
-                    <p className="text-xs text-gray-500 mt-1">{locale === 'fr' ? 'Format recommandé: PDF. Max 5Mo.' : 'Recommended format: PDF. Max 5MB.'}</p>
+                    <p className="text-xs text-gray-500 mt-1">{locale === 'fr' ? 'Obligatoire. Format recommandé: PDF. Max 5Mo.' : 'Required. Recommended format: PDF. Max 5MB.'}</p>
                   </div>
 
                   {/* Motivation */}
