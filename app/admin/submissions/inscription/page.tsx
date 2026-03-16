@@ -208,7 +208,7 @@ export default function InscriptionSubmissionsPage() {
         const worksheet = XLSX.utils.json_to_sheet(dataForExport)
         const workbook = XLSX.utils.book_new()
         XLSX.utils.book_append_sheet(workbook, worksheet, "Inscriptions")
-        
+
         XLSX.writeFile(workbook, `inscriptions_${new Date().toISOString().split("T")[0]}.xlsx`)
     }
 
@@ -315,167 +315,167 @@ export default function InscriptionSubmissionsPage() {
                                         const isExpanded = expandedRows.has(submission.id)
                                         return (
                                             <React.Fragment key={submission.id}>
-                                            <tr className="hover:bg-gray-50 transition-colors">
-                                                <td className="px-4 py-4 text-center cursor-pointer" onClick={() => toggleRow(submission.id)}>
-                                                    <Button variant="ghost" size="sm" className="p-0 h-6 w-6">
-                                                        {isExpanded ? <ChevronUp className="h-4 w-4 text-gray-500" /> : <ChevronDown className="h-4 w-4 text-gray-500" />}
-                                                    </Button>
-                                                </td>
-                                                <td className="px-4 py-4">
-                                                    <div className="flex flex-col">
-                                                        <span className="font-medium text-[#0A2A43]">
-                                                            {submission.firstName} {submission.lastName}
-                                                        </span>
-                                                        <span className="text-sm text-gray-500">
-                                                            {submission.email}
-                                                        </span>
-                                                        {submission.cvUrl && (
-                                                            <span className="text-xs text-blue-600 font-medium flex items-center mt-1">
-                                                                <Download className="h-3 w-3 mr-1" /> CV Disponible
+                                                <tr className="hover:bg-gray-50 transition-colors">
+                                                    <td className="px-4 py-4 text-center cursor-pointer" onClick={() => toggleRow(submission.id)}>
+                                                        <Button variant="ghost" size="sm" className="p-0 h-6 w-6">
+                                                            {isExpanded ? <ChevronUp className="h-4 w-4 text-gray-500" /> : <ChevronDown className="h-4 w-4 text-gray-500" />}
+                                                        </Button>
+                                                    </td>
+                                                    <td className="px-4 py-4">
+                                                        <div className="flex flex-col">
+                                                            <span className="font-medium text-[#0A2A43]">
+                                                                {submission.firstName} {submission.lastName}
                                                             </span>
-                                                        )}
-                                                    </div>
-                                                </td>
-                                                <td className="px-4 py-4">
-                                                    <Badge variant="outline" className="bg-[#0A2A43]/5 text-[#0A2A43] border-[#0A2A43]/20">
-                                                        {submission.program}
-                                                    </Badge>
-                                                </td>
-                                                <td className="px-4 py-4">
-                                                    <Badge className={status?.color || "bg-gray-100"}>
-                                                        {status?.label || submission.status}
-                                                    </Badge>
-                                                </td>
-                                                <td className="px-4 py-4">
-                                                    {submission.statut_final === "Accepté" ? (
-                                                        <Badge className="bg-green-100 text-green-800 border-none"><Check className="w-3 h-3 mr-1"/> Accepté</Badge>
-                                                    ) : submission.statut_final === "Refusé" ? (
-                                                        <Badge className="bg-red-100 text-red-800 border-none"><XCircle className="w-3 h-3 mr-1"/> Refusé</Badge>
-                                                    ) : (
-                                                        <span className="text-gray-400 text-sm">En attente</span>
-                                                    )}
-                                                </td>
-                                                <td className="px-4 py-4 text-sm text-gray-500">
-                                                    {formatDate(submission.createdAt)}
-                                                </td>
-                                                <td className="px-4 py-4 text-right">
-                                                    <DropdownMenu>
-                                                        <DropdownMenuTrigger asChild>
-                                                            <Button variant="ghost" size="sm">
-                                                                <MoreHorizontal className="h-4 w-4" />
-                                                            </Button>
-                                                        </DropdownMenuTrigger>
-                                                        <DropdownMenuContent align="end">
-                                                            <div className="px-2 py-1.5 text-xs font-semibold text-gray-500 uppercase tracking-wider">Traitement</div>
-                                                            <DropdownMenuItem onClick={() => updateStatus(submission.id, "in_progress")}>
-                                                                <Clock className="h-4 w-4 mr-2 text-yellow-500" />
-                                                                Marquer en cours
-                                                            </DropdownMenuItem>
-                                                            <DropdownMenuItem onClick={() => updateStatus(submission.id, "completed")}>
-                                                                <CheckCircle className="h-4 w-4 mr-2 text-green-500" />
-                                                                Marquer traité
-                                                            </DropdownMenuItem>
-
-                                                            <div className="h-px bg-gray-100 my-1" />
-                                                            <div className="px-2 py-1.5 text-xs font-semibold text-gray-500 uppercase tracking-wider">Décision Finale</div>
-                                                            <DropdownMenuItem onClick={() => updateStatutFinal(submission.id, "Accepté")}>
-                                                                <Check className="h-4 w-4 mr-2 text-green-600" />
-                                                                Accepter
-                                                            </DropdownMenuItem>
-                                                            <DropdownMenuItem onClick={() => updateStatutFinal(submission.id, "Refusé")}>
-                                                                <XCircle className="h-4 w-4 mr-2 text-red-600" />
-                                                                Refuser
-                                                            </DropdownMenuItem>
-
-                                                            <div className="h-px bg-gray-100 my-1" />
-                                                            <DropdownMenuItem
-                                                                onClick={() => setDeleteId(submission.id)}
-                                                                className="text-red-600 focus:bg-red-50 focus:text-red-600"
-                                                            >
-                                                                <Trash2 className="h-4 w-4 mr-2" />
-                                                                Supprimer
-                                                            </DropdownMenuItem>
-                                                        </DropdownMenuContent>
-                                                    </DropdownMenu>
-                                                    <div className="flex justify-end gap-1 mt-2">
-                                                        <Button variant="ghost" size="icon" className="h-8 w-8 text-green-600 hover:bg-green-50" onClick={() => updateStatutFinal(submission.id, "Accepté")} title="Accepter">
-                                                            <Check className="h-4 w-4" />
-                                                        </Button>
-                                                        <Button variant="ghost" size="icon" className="h-8 w-8 text-red-600 hover:bg-red-50" onClick={() => updateStatutFinal(submission.id, "Refusé")} title="Refuser">
-                                                            <XCircle className="h-4 w-4" />
-                                                        </Button>
-                                                        <Button variant="ghost" size="icon" className="h-8 w-8 text-gray-400 hover:text-red-600 hover:bg-red-50" onClick={() => setDeleteId(submission.id)} title="Supprimer">
-                                                            <Trash2 className="h-4 w-4" />
-                                                        </Button>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                            {isExpanded && (
-                                                <tr className="bg-gray-50/50">
-                                                    <td colSpan={7} className="p-0">
-                                                        <div className="px-12 py-6 grid grid-cols-1 md:grid-cols-2 gap-6 border-b border-gray-100">
-                                                            {/* Infos Contact */}
-                                                            <div className="space-y-3">
-                                                                <h4 className="font-semibold text-[#0A2A43] flex items-center gap-2 border-b pb-2">
-                                                                    <User className="h-4 w-4 text-[#C9A44A]" /> Coordonnées
-                                                                </h4>
-                                                                <div className="grid grid-cols-2 gap-y-2 text-sm">
-                                                                    <span className="text-gray-500">Email:</span>
-                                                                    <a href={`mailto:${submission.email}`} className="text-blue-600 hover:underline">{submission.email}</a>
-                                                                    
-                                                                    <span className="text-gray-500">Téléphone:</span>
-                                                                    {submission.phone ? <a href={`tel:${submission.phone}`} className="text-blue-600 hover:underline">{submission.phone}</a> : <span className="text-gray-400 italic">Non renseigné</span>}
-                                                                    
-                                                                    <span className="text-gray-500">Pays:</span>
-                                                                    <span className="text-gray-900">{submission.country || "-"}</span>
-                                                                </div>
-                                                            </div>
-
-                                                            {/* Infos Académiques */}
-                                                            <div className="space-y-3">
-                                                                <h4 className="font-semibold text-[#0A2A43] flex items-center gap-2 border-b pb-2">
-                                                                    <GraduationCap className="h-4 w-4 text-[#C9A44A]" /> Profil Académique
-                                                                </h4>
-                                                                <div className="grid grid-cols-2 gap-y-2 text-sm">
-                                                                    <span className="text-gray-500">Profil:</span>
-                                                                    <span className="text-gray-900">{submission.profile || "-"}</span>
-                                                                    
-                                                                    <span className="text-gray-500">Dernier diplôme:</span>
-                                                                    <span className="text-gray-900">{submission.lastDiploma || "-"}</span>
-                                                                    
-                                                                    <span className="text-gray-500">Programme:</span>
-                                                                    <span className="font-medium text-[#0A2A43]">{submission.program}</span>
-                                                                </div>
-                                                            </div>
-
-                                                            {/* Motivation */}
-                                                            {submission.motivation && (
-                                                                <div className="col-span-1 md:col-span-2 space-y-2 mt-2">
-                                                                    <h4 className="font-medium text-gray-700">Motivation :</h4>
-                                                                    <div className="bg-white p-4 rounded-lg border text-sm text-gray-700 whitespace-pre-wrap">
-                                                                        {submission.motivation}
-                                                                    </div>
-                                                                </div>
-                                                            )}
-                                                            
-                                                            {/* CV */}
+                                                            <span className="text-sm text-gray-500">
+                                                                {submission.email}
+                                                            </span>
                                                             {submission.cvUrl && (
-                                                                <div className="col-span-1 md:col-span-2 pt-2">
-                                                                     <a 
-                                                                        href={submission.cvUrl}
-                                                                        download={`CV_${submission.lastName}.pdf`}
-                                                                        target="_blank"
-                                                                        rel="noopener noreferrer" 
-                                                                        className="inline-flex items-center gap-2 px-4 py-2 bg-blue-50 text-blue-700 hover:bg-blue-100 rounded-lg text-sm font-medium transition-colors"
-                                                                    >
-                                                                        <Download className="h-4 w-4" /> Voir le CV
-                                                                    </a>
-                                                                </div>
+                                                                <span className="text-xs text-blue-600 font-medium flex items-center mt-1">
+                                                                    <Download className="h-3 w-3 mr-1" /> CV Disponible
+                                                                </span>
                                                             )}
                                                         </div>
                                                     </td>
+                                                    <td className="px-4 py-4">
+                                                        <Badge variant="outline" className="bg-[#0A2A43]/5 text-[#0A2A43] border-[#0A2A43]/20">
+                                                            {submission.program}
+                                                        </Badge>
+                                                    </td>
+                                                    <td className="px-4 py-4">
+                                                        <Badge className={status?.color || "bg-gray-100"}>
+                                                            {status?.label || submission.status}
+                                                        </Badge>
+                                                    </td>
+                                                    <td className="px-4 py-4">
+                                                        {submission.statut_final === "Accepté" ? (
+                                                            <Badge className="bg-green-100 text-green-800 border-none"><Check className="w-3 h-3 mr-1" /> Accepté</Badge>
+                                                        ) : submission.statut_final === "Refusé" ? (
+                                                            <Badge className="bg-red-100 text-red-800 border-none"><XCircle className="w-3 h-3 mr-1" /> Refusé</Badge>
+                                                        ) : (
+                                                            <span className="text-gray-400 text-sm">En attente</span>
+                                                        )}
+                                                    </td>
+                                                    <td className="px-4 py-4 text-sm text-gray-500">
+                                                        {formatDate(submission.createdAt)}
+                                                    </td>
+                                                    <td className="px-4 py-4 text-right">
+                                                        <DropdownMenu>
+                                                            <DropdownMenuTrigger asChild>
+                                                                <Button variant="ghost" size="sm">
+                                                                    <MoreHorizontal className="h-4 w-4" />
+                                                                </Button>
+                                                            </DropdownMenuTrigger>
+                                                            <DropdownMenuContent align="end">
+                                                                <div className="px-2 py-1.5 text-xs font-semibold text-gray-500 uppercase tracking-wider">Traitement</div>
+                                                                <DropdownMenuItem onClick={() => updateStatus(submission.id, "in_progress")}>
+                                                                    <Clock className="h-4 w-4 mr-2 text-yellow-500" />
+                                                                    Marquer en cours
+                                                                </DropdownMenuItem>
+                                                                <DropdownMenuItem onClick={() => updateStatus(submission.id, "completed")}>
+                                                                    <CheckCircle className="h-4 w-4 mr-2 text-green-500" />
+                                                                    Marquer traité
+                                                                </DropdownMenuItem>
+
+                                                                <div className="h-px bg-gray-100 my-1" />
+                                                                <div className="px-2 py-1.5 text-xs font-semibold text-gray-500 uppercase tracking-wider">Décision Finale</div>
+                                                                <DropdownMenuItem onClick={() => updateStatutFinal(submission.id, "Accepté")}>
+                                                                    <Check className="h-4 w-4 mr-2 text-green-600" />
+                                                                    Accepter
+                                                                </DropdownMenuItem>
+                                                                <DropdownMenuItem onClick={() => updateStatutFinal(submission.id, "Refusé")}>
+                                                                    <XCircle className="h-4 w-4 mr-2 text-red-600" />
+                                                                    Refuser
+                                                                </DropdownMenuItem>
+
+                                                                <div className="h-px bg-gray-100 my-1" />
+                                                                <DropdownMenuItem
+                                                                    onClick={() => setDeleteId(submission.id)}
+                                                                    className="text-red-600 focus:bg-red-50 focus:text-red-600"
+                                                                >
+                                                                    <Trash2 className="h-4 w-4 mr-2" />
+                                                                    Supprimer
+                                                                </DropdownMenuItem>
+                                                            </DropdownMenuContent>
+                                                        </DropdownMenu>
+                                                        <div className="flex justify-end gap-1 mt-2">
+                                                            <Button variant="ghost" size="icon" className="h-8 w-8 text-green-600 hover:bg-green-50" onClick={() => updateStatutFinal(submission.id, "Accepté")} title="Accepter">
+                                                                <Check className="h-4 w-4" />
+                                                            </Button>
+                                                            <Button variant="ghost" size="icon" className="h-8 w-8 text-red-600 hover:bg-red-50" onClick={() => updateStatutFinal(submission.id, "Refusé")} title="Refuser">
+                                                                <XCircle className="h-4 w-4" />
+                                                            </Button>
+                                                            <Button variant="ghost" size="icon" className="h-8 w-8 text-gray-400 hover:text-red-600 hover:bg-red-50" onClick={() => setDeleteId(submission.id)} title="Supprimer">
+                                                                <Trash2 className="h-4 w-4" />
+                                                            </Button>
+                                                        </div>
+                                                    </td>
                                                 </tr>
-                                            )}
+                                                {isExpanded && (
+                                                    <tr className="bg-gray-50/50">
+                                                        <td colSpan={7} className="p-0">
+                                                            <div className="px-12 py-6 grid grid-cols-1 md:grid-cols-2 gap-6 border-b border-gray-100">
+                                                                {/* Infos Contact */}
+                                                                <div className="space-y-3">
+                                                                    <h4 className="font-semibold text-[#0A2A43] flex items-center gap-2 border-b pb-2">
+                                                                        <User className="h-4 w-4 text-[#C9A44A]" /> Coordonnées
+                                                                    </h4>
+                                                                    <div className="grid grid-cols-2 gap-y-2 text-sm">
+                                                                        <span className="text-gray-500">Email:</span>
+                                                                        <a href={`mailto:${submission.email}`} className="text-blue-600 hover:underline">{submission.email}</a>
+
+                                                                        <span className="text-gray-500">Téléphone:</span>
+                                                                        {submission.phone ? <a href={`tel:${submission.phone}`} className="text-blue-600 hover:underline">{submission.phone}</a> : <span className="text-gray-400 italic">Non renseigné</span>}
+
+                                                                        <span className="text-gray-500">Pays:</span>
+                                                                        <span className="text-gray-900">{submission.country || "-"}</span>
+                                                                    </div>
+                                                                </div>
+
+                                                                {/* Infos Académiques */}
+                                                                <div className="space-y-3">
+                                                                    <h4 className="font-semibold text-[#0A2A43] flex items-center gap-2 border-b pb-2">
+                                                                        <GraduationCap className="h-4 w-4 text-[#C9A44A]" /> Profil Académique
+                                                                    </h4>
+                                                                    <div className="grid grid-cols-2 gap-y-2 text-sm">
+                                                                        <span className="text-gray-500">Profil:</span>
+                                                                        <span className="text-gray-900">{submission.profile || "-"}</span>
+
+                                                                        <span className="text-gray-500">Dernier diplôme:</span>
+                                                                        <span className="text-gray-900">{submission.lastDiploma || "-"}</span>
+
+                                                                        <span className="text-gray-500">Programme:</span>
+                                                                        <span className="font-medium text-[#0A2A43]">{submission.program}</span>
+                                                                    </div>
+                                                                </div>
+
+                                                                {/* Motivation */}
+                                                                {submission.motivation && (
+                                                                    <div className="col-span-1 md:col-span-2 space-y-2 mt-2">
+                                                                        <h4 className="font-medium text-gray-700">Motivation :</h4>
+                                                                        <div className="bg-white p-4 rounded-lg border text-sm text-gray-700 whitespace-pre-wrap">
+                                                                            {submission.motivation}
+                                                                        </div>
+                                                                    </div>
+                                                                )}
+
+                                                                {/* CV */}
+                                                                {submission.cvUrl && (
+                                                                    <div className="col-span-1 md:col-span-2 pt-2">
+                                                                        <a
+                                                                            href={submission.cvUrl}
+                                                                            download={`CV_${submission.lastName}.pdf`}
+                                                                            target="_blank"
+                                                                            rel="noopener noreferrer"
+                                                                            className="inline-flex items-center gap-2 px-4 py-2 bg-blue-50 text-blue-700 hover:bg-blue-100 rounded-lg text-sm font-medium transition-colors"
+                                                                        >
+                                                                            <Download className="h-4 w-4" /> Voir le CV
+                                                                        </a>
+                                                                    </div>
+                                                                )}
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                )}
                                             </React.Fragment>
                                         )
                                     })}

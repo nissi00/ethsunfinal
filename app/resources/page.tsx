@@ -1,5 +1,5 @@
 "use client"
-
+export const dynamic = "force-dynamic"
 import { useContext, useState, useEffect } from "react"
 import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
@@ -163,7 +163,7 @@ export default function ResourcesPage() {
         </div>
       </section>
 
-       {/* Actualités & Articles */}
+      {/* Actualités & Articles */}
       <section className="py-20">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">

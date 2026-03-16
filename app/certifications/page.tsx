@@ -1,5 +1,5 @@
 "use client"
-
+export const dynamic = "force-dynamic"
 import { useContext, useEffect, useState } from "react"
 import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
@@ -91,9 +91,9 @@ export default function CertificationsPage() {
 
   function getFilteredCertifications() {
     const query = searchQuery.trim().toLowerCase()
-    
+
     // Flatten all certifications from all categories
-    const allCertifications = categories.flatMap(cat => 
+    const allCertifications = categories.flatMap(cat =>
       cat.certifications.map(cert => ({ ...cert, categoryName: getCategoryName(cat) }))
     )
 
@@ -101,7 +101,7 @@ export default function CertificationsPage() {
       return []
     }
 
-    return allCertifications.filter(cert => 
+    return allCertifications.filter(cert =>
       getCertTitle(cert).toLowerCase().includes(query)
     )
   }
@@ -243,19 +243,19 @@ export default function CertificationsPage() {
                   : "Explore our training domains covering the essential needs of modern organizations"}
             </p>
 
-          {/* Search Bar */}
-          <div className="flex justify-center mb-12">
-            <div className="relative w-full max-w-md">
-              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-[#4A4A4A]" />
-              <Input
-                type="text"
-                placeholder={locale === "fr" ? "Rechercher une certification..." : locale === "es" ? "Buscar una certificación..." : "Search a certification..."}
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-12 py-3 text-base border-[#C9A44A] focus:border-[#C9A44A] focus:ring-[#C9A44A]"
-              />
+            {/* Search Bar */}
+            <div className="flex justify-center mb-12">
+              <div className="relative w-full max-w-md">
+                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-[#4A4A4A]" />
+                <Input
+                  type="text"
+                  placeholder={locale === "fr" ? "Rechercher une certification..." : locale === "es" ? "Buscar una certificación..." : "Search a certification..."}
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-12 py-3 text-base border-[#C9A44A] focus:border-[#C9A44A] focus:ring-[#C9A44A]"
+                />
+              </div>
             </div>
-          </div>
           </div>
 
           {loading ? (

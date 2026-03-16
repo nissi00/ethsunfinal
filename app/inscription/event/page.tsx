@@ -1,5 +1,5 @@
 "use client"
-
+export const dynamic = "force-dynamic";
 import { useContext, useState, useMemo, useEffect } from "react"
 import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
@@ -237,7 +237,7 @@ export default function EventRegistrationPage() {
                     <div className="mb-6 p-4 bg-[#0A2A43]/5 border-l-4 border-[#C9A44A] rounded-r-lg flex items-center gap-4">
                       {displayImage && (
                         <div className="hidden sm:block flex-shrink-0 w-24 h-24 relative rounded-md overflow-hidden bg-white shadow-sm">
-                           <img src={displayImage} alt={programFromUrl || ''} className="object-cover w-full h-full" />
+                          <img src={displayImage} alt={programFromUrl || ''} className="object-cover w-full h-full" />
                         </div>
                       )}
                       <div>
@@ -317,7 +317,7 @@ export default function EventRegistrationPage() {
                   <div className="space-y-4">
                     <div className="space-y-2">
                       <Label>{locale === 'fr' ? "Événement" : locale === 'es' ? "Evento" : "Event"} *</Label>
-                      
+
                       {/* Barre de Recherche (Autocomplete Indépendant) */}
                       {!programFromUrl && (
                         <div className="relative group">
@@ -332,7 +332,7 @@ export default function EventRegistrationPage() {
                             onFocus={() => setShowSearchSuggestions(true)}
                             className="pl-10 h-11 border-gray-300 focus:border-[#C9A44A] transition-all"
                           />
-                          
+
                           {showSearchSuggestions && searchTerm.trim() !== "" && (
                             <>
                               <div className="fixed inset-0 z-10" onClick={() => setShowSearchSuggestions(false)} />
@@ -379,7 +379,7 @@ export default function EventRegistrationPage() {
                           <SelectContent className="max-h-64 border-[#C9A44A]">
                             {programs.length > 0 ? (
                               programs.map((prog) => (
-                                <SelectItem 
+                                <SelectItem
                                   key={prog}
                                   value={prog}
                                   className="cursor-pointer py-3"
