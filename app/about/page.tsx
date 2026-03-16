@@ -10,6 +10,7 @@ import type { Locale } from "@/lib/i18n"
 import { getTranslation } from "@/lib/i18n"
 import { LanguageContext } from "@/components/language-provider"
 import { PartnerCarousel } from "@/components/partner-carousel"
+import { cn } from "@/lib/utils"
 
 const values = [
   {
@@ -86,42 +87,132 @@ const governance = [
   },
 ]
 
-const locations = [
-  {
-    city: "Oxford",
-    country: "Royaume-Uni",
-    countryEn: "United Kingdom",
-    countryEs: "Reino Unido",
-    role: "Siège International",
-    roleEn: "International Headquarters",
-    roleEs: "Sede Internacional",
-  },
-  {
-    city: "Abidjan",
-    country: "Côte d'Ivoire",
-    countryEn: "Côte d'Ivoire",
-    countryEs: "Costa de Marfil",
-    role: "Hub Afrique de l'Ouest",
-    roleEn: "West Africa Hub",
-    roleEs: "Hub África Occidental",
-  },
+const headquarters = {
+  city: "Oxford",
+  country: "Royaume-Uni",
+  countryEn: "United Kingdom",
+  countryEs: "Reino Unido",
+  role: "Siège International",
+  roleEn: "International Headquarters",
+  roleEs: "Sede Internacional",
+}
+
+const learningCenters = [
   {
     city: "Genève",
+    cityEn: "Geneva",
+    cityEs: "Ginebra",
     country: "Suisse",
     countryEn: "Switzerland",
     countryEs: "Suiza",
-    role: "Plateforme Académique Européenne",
-    roleEn: "European Academic Platform",
-    roleEs: "Plataforma Académica Europea",
+    role: "ETHSUN Learning Center",
+    roleEn: "ETHSUN Learning Center",
+    roleEs: "ETHSUN Learning Center",
   },
   {
     city: "Singapour",
+    cityEn: "Singapore",
+    cityEs: "Singapur",
     country: "Singapour",
     countryEn: "Singapore",
     countryEs: "Singapur",
-    role: "Centre d'Excellence Asie-Pacifique",
-    roleEn: "Asia-Pacific Excellence Center",
-    roleEs: "Centro de Excelencia Asia-Pacífico",
+    role: "ETHSUN Learning Center",
+    roleEn: "ETHSUN Learning Center",
+    roleEs: "ETHSUN Learning Center",
+  },
+  {
+    city: "Boston",
+    cityEn: "Boston",
+    cityEs: "Boston",
+    country: "États-Unis",
+    countryEn: "USA",
+    countryEs: "Estados Unidos",
+    role: "ETHSUN Learning Center",
+    roleEn: "ETHSUN Learning Center",
+    roleEs: "ETHSUN Learning Center",
+  },
+  {
+    city: "Doha",
+    cityEn: "Doha",
+    cityEs: "Doha",
+    country: "Qatar",
+    countryEn: "Qatar",
+    countryEs: "Catar",
+    role: "ETHSUN Learning Center",
+    roleEn: "ETHSUN Learning Center",
+    roleEs: "ETHSUN Learning Center",
+  },
+  {
+    city: "Maurice",
+    cityEn: "Mauritius",
+    cityEs: "Mauricio",
+    country: "Île Maurice",
+    countryEn: "Mauritius",
+    countryEs: "Mauricio",
+    role: "ETHSUN Learning Center",
+    roleEn: "ETHSUN Learning Center",
+    roleEs: "ETHSUN Learning Center",
+  },
+]
+
+const franchises = [
+  {
+    city: "Abidjan",
+    cityEn: "Abidjan",
+    cityEs: "Abiyán",
+    country: "Côte d'Ivoire",
+    countryEn: "Ivory Coast",
+    countryEs: "Costa de Marfil",
+    role: "Franchise",
+    roleEn: "Franchise",
+    roleEs: "Franquicia",
+  },
+  {
+    city: "Dakar",
+    cityEn: "Dakar",
+    cityEs: "Dakar",
+    country: "Sénégal",
+    countryEn: "Senegal",
+    countryEs: "Senegal",
+    role: "Franchise",
+    roleEn: "Franchise",
+    roleEs: "Franquicia",
+  },
+  {
+    city: "Rwanda",
+    cityEn: "Rwanda",
+    cityEs: "Ruanda",
+    country: "Rwanda",
+    countryEn: "Rwanda",
+    countryEs: "Ruanda",
+    role: "Ouverture Prochaine",
+    roleEn: "Opening Soon",
+    roleEs: "Apertura Próxima",
+    isOpeningSoon: true,
+  },
+  {
+    city: "Lagos",
+    cityEn: "Lagos",
+    cityEs: "Lagos",
+    country: "Nigeria",
+    countryEn: "Nigeria",
+    countryEs: "Nigeria",
+    role: "Ouverture Prochaine",
+    roleEn: "Opening Soon",
+    roleEs: "Apertura Próxima",
+    isOpeningSoon: true,
+  },
+  {
+    city: "Casablanca",
+    cityEn: "Casablanca",
+    cityEs: "Casablanca",
+    country: "Maroc",
+    countryEn: "Morocco",
+    countryEs: "Marruecos",
+    role: "Ouverture Prochaine",
+    roleEn: "Opening Soon",
+    roleEs: "Apertura Próxima",
+    isOpeningSoon: true,
   },
 ]
 
@@ -343,21 +434,84 @@ export default function AboutPage() {
             </h2>
             <div className="w-24 h-1 bg-theme-accent mx-auto" />
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {locations.map((location, index) => (
-              <Card key={index} className="border-none bg-white hover:shadow-xl transition-shadow">
-                <CardContent className="p-6 text-center">
-                  <MapPin className="h-10 w-10 text-theme-accent mx-auto mb-3" />
-                  <h3 className="text-xl font-serif font-bold text-theme-primary mb-1">{location.city}</h3>
-                  <p className="text-sm text-theme-text mb-3">
-                    {locale === "fr" ? location.country : locale === "es" ? location.countryEs : location.countryEn}
-                  </p>
-                  <Badge className="bg-theme-accent text-theme-primary">
-                    {locale === "fr" ? location.role : locale === "es" ? location.roleEs : location.roleEn}
-                  </Badge>
-                </CardContent>
-              </Card>
-            ))}
+          {/* Headquarters */}
+          <div className="max-w-xs mx-auto mb-16">
+            <Card className="border-none bg-white shadow-lg overflow-hidden border-t-4 border-theme-accent">
+              <CardContent className="p-6 text-center">
+                <MapPin className="h-10 w-10 text-theme-accent mx-auto mb-3" />
+                <h3 className="text-xl font-serif font-bold text-theme-primary mb-1">{headquarters.city}</h3>
+                <p className="text-sm text-theme-text mb-3">
+                  {locale === "fr" ? headquarters.country : locale === "es" ? headquarters.countryEs : headquarters.countryEn}
+                </p>
+                <Badge className="bg-theme-accent text-theme-primary">
+                  {locale === "fr" ? headquarters.role : locale === "es" ? headquarters.roleEs : headquarters.roleEn}
+                </Badge>
+              </CardContent>
+            </Card>
+          </div>
+
+          <div className="space-y-16">
+            {/* Learning Centers */}
+            <div>
+              <h3 className="text-2xl font-serif font-bold text-theme-primary mb-8 text-center border-b border-theme-accent/20 pb-4 inline-block mx-auto w-full">
+                ETHSUN Learning Center
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+                {learningCenters.map((location: any, index) => (
+                  <Card key={index} className="border-none bg-white hover:shadow-xl transition-shadow">
+                    <CardContent className="p-6 text-center">
+                      <MapPin className="h-8 w-8 text-theme-accent mx-auto mb-3 opacity-60" />
+                      <h3 className="text-lg font-serif font-bold text-theme-primary mb-1">
+                        {locale === "fr" ? location.city : locale === "es" ? location.cityEs : location.cityEn}
+                      </h3>
+                      <p className="text-xs text-theme-text mb-3">
+                        {locale === "fr" ? location.country : locale === "es" ? location.countryEs : location.countryEn}
+                      </p>
+                      <Badge variant="outline" className="border-theme-accent text-theme-primary text-[10px] uppercase tracking-wider">
+                        {locale === "fr" ? location.role : locale === "es" ? location.roleEs : location.roleEn}
+                      </Badge>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </div>
+
+            {/* Franchises */}
+            <div>
+              <h3 className="text-2xl font-serif font-bold text-theme-primary mb-8 text-center border-b border-theme-accent/20 pb-4 inline-block mx-auto w-full">
+                {locale === "fr" ? "Franchises" : locale === "es" ? "Franquicias" : "Franchises"}
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+                {franchises.map((location: any, index) => (
+                  <Card key={index} className={cn(
+                    "border-none bg-white hover:shadow-xl transition-all",
+                    location.isOpeningSoon && "opacity-80 grayscale-[0.5]"
+                  )}>
+                    <CardContent className="p-6 text-center">
+                      <MapPin className={cn(
+                        "h-8 w-8 mx-auto mb-3 opacity-60",
+                        location.isOpeningSoon ? "text-theme-text" : "text-theme-accent"
+                      )} />
+                      <h3 className="text-lg font-serif font-bold text-theme-primary mb-1">
+                        {locale === "fr" ? location.city : locale === "es" ? location.cityEs : location.cityEn}
+                      </h3>
+                      <p className="text-xs text-theme-text mb-3">
+                        {locale === "fr" ? location.country : locale === "es" ? location.countryEs : location.countryEn}
+                      </p>
+                      <Badge
+                        variant={location.isOpeningSoon ? "secondary" : "default"}
+                        className={cn(
+                          "text-[10px] uppercase tracking-wider",
+                          !location.isOpeningSoon && "bg-theme-accent text-theme-primary"
+                        )}
+                      >
+                        {locale === "fr" ? location.role : locale === "es" ? location.roleEs : location.roleEn}
+                      </Badge>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
       </section>
